@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arabic Study</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0b14;--surface:#161422;--surface2:#1e1b2e;--border:#2c2840;
+  --text:#f0eef8;--muted:#7b7896;
+  --pink:#f472b6;--orange:#fb923c;--red:#f87171;--purple:#a78bfa;
+  --r:12px;--rs:8px;--shadow:0 4px 28px rgba(0,0,0,.5);
+}
+*{box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);display:flex;min-height:100vh;font-size:15px}
+
+/* SIDEBAR */
+.sidebar{width:210px;min-height:100vh;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:1.25rem .875rem;position:fixed;top:0;left:0;bottom:0;gap:.2rem;z-index:10}
+.logo{display:flex;flex-direction:column;align-items:center;padding:.5rem 0 1.25rem;gap:.2rem}
+.logo-ar{font-family:'Noto Naskh Arabic',serif;font-size:1.9rem;font-weight:700;background:linear-gradient(135deg,var(--pink),var(--purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.logo-en{font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.nav-btn{display:flex;align-items:center;gap:.65rem;padding:.7rem .9rem;border:none;background:transparent;color:var(--muted);font-size:.875rem;font-family:inherit;border-radius:var(--rs);cursor:pointer;width:100%;text-align:left;transition:background .15s,color .15s}
+.nav-btn svg{width:17px;height:17px;fill:currentColor;flex-shrink:0}
+.nav-btn:hover{background:var(--surface2);color:var(--text)}
+.nav-btn.active{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+.sidebar-sep{height:1px;background:var(--border);margin:.4rem 0}
+.sidebar-footer{margin-top:auto;padding-top:.75rem;border-top:1px solid var(--border)}
+.streak-badge{font-size:.82rem;color:var(--muted);text-align:center;padding:.4rem}
+
+/* MAIN */
+.main-content{margin-left:210px;flex:1;padding:2.25rem 2.5rem;max-width:960px}
+.view{display:none}.view.active{display:block}
+.view-header{margin-bottom:1.75rem;display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.view-header h1{font-size:1.65rem;font-weight:700}
+.sub{color:var(--muted);font-size:.875rem;margin-top:.2rem}
+.row{display:flex;gap:.75rem;flex-wrap:wrap;align-items:center}
+
+/* BUTTONS */
+.btn{padding:.6rem 1.3rem;border-radius:var(--rs);font-size:.875rem;font-family:inherit;font-weight:600;border:none;cursor:pointer;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-pink{background:linear-gradient(135deg,var(--pink),var(--purple));color:#fff}
+.btn-pink:hover{opacity:.88}
+.btn-orange{background:var(--orange);color:#fff}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted)}
+.btn-red{background:transparent;color:var(--red);border:1px solid var(--red)}
+.btn-red:hover{background:var(--red);color:#fff}
+.btn-sm{padding:.38rem .75rem;font-size:.78rem}
+.btn-purple{background:var(--purple);color:#fff}
+
+/* INPUTS */
+.inp{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.6rem .85rem;border-radius:var(--rs);font-size:.875rem;font-family:inherit;transition:border-color .15s;width:100%}
+.inp:focus{outline:none;border-color:var(--pink)}
+.inp::placeholder{color:var(--muted)}
+.inp-ar{font-family:'Noto Naskh Arabic',serif;font-size:1.15rem}
+.inp-lg{font-size:1.1rem;padding:.75rem 1rem}
+.sel{background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:.5rem 2.2rem .5rem .85rem;border-radius:var(--rs);font-size:.85rem;font-family:inherit;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%237b7896' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .75rem center;transition:border-color .15s}
+.sel:focus{outline:none;border-color:var(--pink)}
+.sel option{background:var(--surface2);color:var(--text)}
+
+/* BADGES */
+.badge{font-size:.7rem;padding:.2rem .55rem;border-radius:100px;border:1px solid var(--border);color:var(--muted);background:var(--surface2)}
+.badge.learning{border-color:var(--orange);color:var(--orange)}
+.badge.review{border-color:var(--pink);color:var(--pink)}
+.badge.mastered{border-color:var(--purple);color:var(--purple)}
+.badge.vocab{border-color:var(--pink);color:var(--pink)}
+.badge.phrase{border-color:var(--orange);color:var(--orange)}
+
+/* STAT CARDS */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;text-align:center;border-top:3px solid}
+.s-pink{border-top-color:var(--pink)}.s-orange{border-top-color:var(--orange)}.s-red{border-top-color:var(--red)}.s-purple{border-top-color:var(--purple)}
+.stat-val{font-size:2.2rem;font-weight:700;line-height:1;margin-bottom:.3rem}
+.stat-lbl{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+
+/* PROGRESS */
+.prog-wrap{background:var(--surface2);border-radius:100px;height:7px;overflow:hidden}
+.prog-fill{height:100%;border-radius:100px;background:linear-gradient(90deg,var(--pink),var(--purple));transition:width .4s}
+
+/* OPTION TOGGLE GROUPS */
+.opt-group{display:flex;gap:.4rem;flex-wrap:wrap}
+.opt-btn{padding:.45rem 1rem;border-radius:var(--rs);font-size:.85rem;font-family:inherit;font-weight:500;border:1px solid var(--border);background:var(--surface2);color:var(--muted);cursor:pointer;transition:all .15s}
+.opt-btn:hover{border-color:var(--pink);color:var(--pink)}
+.opt-btn.active{border-color:var(--pink);background:rgba(244,114,182,.12);color:var(--pink)}
+
+/* DASHBOARD */
+.dash-actions{display:flex;gap:.75rem;margin-bottom:2rem;flex-wrap:wrap}
+.folder-progress-list{display:flex;flex-direction:column;gap:.5rem}
+.fp-row{display:flex;align-items:center;gap:.75rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:.7rem 1rem}
+.fp-name{font-weight:500;min-width:140px;font-size:.9rem}
+.fp-bar{flex:1}
+.fp-pct{font-size:.8rem;color:var(--muted);min-width:34px;text-align:right}
+
+/* FOLDER GRID */
+.folders-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem}
+.folder-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;transition:border-color .15s,transform .15s;position:relative}
+.folder-card:hover{transform:translateY(-2px)}
+.folder-card.f-pink{border-top:3px solid var(--pink)}.folder-card.f-orange{border-top:3px solid var(--orange)}.folder-card.f-red{border-top:3px solid var(--red)}.folder-card.f-purple{border-top:3px solid var(--purple)}
+.folder-icon{font-size:1.4rem;margin-bottom:.5rem}
+.folder-name{font-weight:600;font-size:.95rem;margin-bottom:.25rem}
+.folder-count{font-size:.78rem;color:var(--muted)}
+.folder-actions{position:absolute;top:.75rem;right:.75rem;display:flex;gap:.3rem;opacity:0;transition:opacity .15s}
+.folder-card:hover .folder-actions{opacity:1}
+.icon-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:.25rem .45rem;cursor:pointer;font-size:.75rem;font-family:inherit;transition:color .15s,border-color .15s}
+.icon-btn:hover{color:var(--text);border-color:var(--muted)}
+.icon-btn.danger:hover{color:var(--red);border-color:var(--red)}
+.add-folder-card{background:transparent;border:2px dashed var(--border);border-radius:var(--r);padding:1.25rem;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem;color:var(--muted);font-size:.875rem;font-family:inherit;transition:border-color .15s,color .15s;min-height:116px}
+.add-folder-card:hover{border-color:var(--pink);color:var(--pink)}
+
+/* FOLDER DETAIL */
+.folder-detail-hdr{display:flex;align-items:center;gap:.875rem;margin-bottom:1.5rem;flex-wrap:wrap}
+.back-btn{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:var(--rs);padding:.45rem .85rem;cursor:pointer;font-family:inherit;font-size:.85rem;display:flex;align-items:center;gap:.4rem}
+.back-btn:hover{color:var(--text);border-color:var(--muted)}
+.folder-title-edit{font-size:1.45rem;font-weight:700;background:transparent;border:none;color:var(--text);font-family:inherit;border-bottom:2px solid transparent;transition:border-color .15s;flex:1}
+.folder-title-edit:focus{outline:none;border-bottom-color:var(--pink)}
+
+/* QUICK ADD */
+.quick-add{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:1.5rem}
+.qa-title{font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.875rem;text-transform:uppercase;letter-spacing:.06em}
+.qa-row{display:grid;grid-template-columns:1.6fr 1fr 1fr auto;gap:.55rem;align-items:end}
+.qa-lbl{font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+.qa-bottom{display:flex;gap:.5rem;align-items:center;margin-top:.6rem;flex-wrap:wrap}
+
+/* CARDS GRID */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.85rem}
+.card-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.1rem}
+.ci-ar{font-family:'Noto Naskh Arabic',serif;font-size:1.5rem;font-weight:600;direction:rtl;text-align:right;margin-bottom:.35rem;line-height:1.5}
+.ci-en{font-size:.95rem;font-weight:500;margin-bottom:.2rem}
+.ci-tr{font-size:.78rem;color:var(--muted);font-style:italic;margin-bottom:.2rem}
+.ci-alt{font-size:.75rem;color:var(--muted);margin-bottom:.55rem}
+.ci-alt span{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:.1rem .35rem;margin-right:.25rem;font-size:.72rem}
+.ci-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.35rem}
+
+/* PICKER (folder selection for study/quiz) */
+.picker-header{margin-bottom:1.5rem}
+.picker-header h1{font-size:1.65rem;font-weight:700;margin-bottom:.3rem}
+.picker-header p{color:var(--muted);font-size:.9rem}
+.picker-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:.875rem;margin-bottom:1.5rem}
+.picker-card{background:var(--surface);border:2px solid var(--border);border-radius:var(--r);padding:1.1rem;cursor:pointer;transition:all .15s;text-align:left}
+.picker-card:hover{transform:translateY(-2px)}
+.picker-card.all-topics{border-color:var(--muted);background:linear-gradient(135deg,rgba(244,114,182,.08),rgba(167,139,250,.08))}
+.picker-card.all-topics:hover{border-color:var(--pink)}
+.picker-card.f-pink{border-top:3px solid var(--pink)}.picker-card.f-orange{border-top:3px solid var(--orange)}.picker-card.f-red{border-top:3px solid var(--red)}.picker-card.f-purple{border-top:3px solid var(--purple)}
+.pc-icon{font-size:1.25rem;margin-bottom:.4rem}
+.pc-name{font-weight:600;font-size:.9rem;margin-bottom:.2rem}
+.pc-count{font-size:.75rem;color:var(--muted)}
+
+/* STUDY ACTIVE */
+.study-active-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.studying-folder-tag{font-size:.82rem;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:.3rem .75rem}
+.prog-bar-area{margin-bottom:1.75rem}
+.prog-text-row{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:.3rem}
+
+/* FLASHCARD */
+.fc-scene{perspective:1200px;width:100%;max-width:520px;margin:0 auto;cursor:pointer}
+.fc{width:100%;height:270px;position:relative;transform-style:preserve-3d;transition:transform .5s cubic-bezier(.4,0,.2,1);border-radius:var(--r)}
+.fc.flipped{transform:rotateY(180deg)}
+.fc-face{position:absolute;inset:0;backface-visibility:hidden;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;border:1px solid var(--border);box-shadow:var(--shadow)}
+.fc-front{background:var(--surface)}
+.fc-back{background:var(--surface2);transform:rotateY(180deg)}
+.fc-badge{position:absolute;top:.9rem;left:.9rem;font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;padding:.18rem .5rem;border-radius:100px;background:var(--surface2);color:var(--muted)}
+.fc-ar{font-family:'Noto Naskh Arabic',serif;font-size:2.8rem;font-weight:600;text-align:center;line-height:1.4;margin-bottom:.35rem}
+.fc-tr{font-size:.95rem;color:var(--muted);font-style:italic;text-align:center}
+.fc-hint{position:absolute;bottom:1rem;font-size:.75rem;color:var(--border);letter-spacing:.04em}
+.fc-en{font-size:1.6rem;font-weight:600;text-align:center;margin-bottom:.4rem}
+.fc-ar-sm{font-family:'Noto Naskh Arabic',serif;font-size:1.25rem;color:var(--muted);text-align:center;margin-bottom:.3rem}
+.fc-alts{font-size:.75rem;color:var(--muted);text-align:center;font-style:italic}
+.fc-tag{position:absolute;top:.9rem;right:.9rem;font-size:.68rem;color:var(--muted);background:var(--surface);padding:.18rem .5rem;border-radius:100px;border:1px solid var(--border)}
+
+/* RATING */
+.rating-area{max-width:520px;margin:.9rem auto 0;text-align:center}
+.rating-lbl{font-size:.82rem;color:var(--muted);margin-bottom:.65rem}
+.rating-row{display:grid;grid-template-columns:repeat(4,1fr);gap:.6rem}
+.r-btn{display:flex;flex-direction:column;align-items:center;padding:.65rem .4rem;border-radius:var(--rs);border:2px solid;cursor:pointer;font-family:inherit;background:transparent;transition:transform .1s,opacity .15s}
+.r-btn:hover{opacity:.8;transform:translateY(-2px)}
+.r-name{font-weight:600;font-size:.85rem}
+.r-int{font-size:.68rem;margin-top:.15rem;opacity:.75}
+.r-again{border-color:var(--red);color:var(--red)}.r-hard{border-color:var(--orange);color:var(--orange)}.r-good{border-color:var(--pink);color:var(--pink)}.r-easy{border-color:var(--purple);color:var(--purple)}
+
+/* QUIZ SETUP */
+.quiz-setup-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem;max-width:540px;margin:1rem auto}
+.qs-title{font-size:1.3rem;font-weight:700;margin-bottom:1.5rem;text-align:center}
+.qs-section{margin-bottom:1.25rem}
+.qs-label{font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:.5rem}
+.qs-folder-sel{width:100%}
+.qs-start-btn{width:100%;padding:.8rem;font-size:1rem;margin-top:.5rem;border-radius:var(--rs)}
+.qs-start-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+
+/* QUIZ SESSION */
+.quiz-meta{display:flex;justify-content:space-between;margin-bottom:.6rem;font-size:.82rem;color:var(--muted)}
+.qprog-wrap{background:var(--surface2);border-radius:100px;height:6px;margin-bottom:1.5rem;overflow:hidden}
+.quiz-q-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2rem;text-align:center;margin-bottom:1.25rem;min-height:160px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.5rem}
+.q-prompt{font-size:.82rem;color:var(--muted)}
+.q-ar{font-family:'Noto Naskh Arabic',serif;font-size:2.3rem;font-weight:600;line-height:1.5;direction:rtl}
+.q-tr{font-size:1rem;color:var(--muted);font-style:italic}
+.quiz-opts{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:.75rem}
+.q-opt{padding:.875rem 1.1rem;background:var(--surface);border:2px solid var(--border);border-radius:var(--rs);color:var(--text);font-size:.9rem;font-family:inherit;cursor:pointer;text-align:left;transition:border-color .2s,background .2s,color .2s,box-shadow .2s;line-height:1.4}
+.q-opt:hover:not(:disabled){border-color:var(--pink);background:rgba(244,114,182,.06)}
+.q-opt:disabled{cursor:default}
+.q-opt .opt-en{font-weight:500;display:block}
+.q-opt .opt-tr{font-size:.75rem;color:var(--muted);display:block;margin-top:.2rem;font-style:italic}
+/* MC feedback */
+.q-opt.mc-correct{border-color:rgba(255,255,255,.85)!important;color:#fff!important;background:rgba(255,255,255,.06)!important;box-shadow:0 0 14px rgba(255,255,255,.15)!important}
+.q-opt.mc-wrong{border-color:var(--red)!important;color:var(--red)!important;background:rgba(248,113,113,.08)!important}
+.q-opt.mc-reveal{border-color:var(--pink)!important;color:var(--pink)!important;background:rgba(244,114,182,.1)!important;box-shadow:0 0 12px rgba(244,114,182,.2)!important}
+
+/* TYPE ANSWER */
+.ta-area{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem;margin-bottom:.75rem}
+.ta-input-row{display:flex;gap:.6rem}
+.ta-feedback{border-radius:var(--rs);padding:1rem 1.25rem;margin-bottom:.75rem;display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.ta-feedback.correct{background:rgba(167,139,250,.1);border:1px solid var(--purple)}
+.ta-feedback.wrong{background:rgba(248,113,113,.08);border:1px solid var(--red)}
+.ta-result-text{font-weight:600;font-size:.95rem;margin-bottom:.2rem}
+.ta-correct-show{font-size:.85rem;color:var(--muted)}
+.ta-correct-show strong{color:var(--text)}
+.ta-actions{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap}
+
+/* RESULTS */
+.results-card{text-align:center;max-width:480px;margin:2.5rem auto;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2.5rem 2rem}
+.res-circle{width:96px;height:96px;border-radius:50%;border:4px solid var(--purple);display:flex;align-items:center;justify-content:center;font-size:1.9rem;font-weight:700;margin:0 auto 1.25rem;color:var(--purple)}
+.res-breakdown{background:var(--surface2);border-radius:var(--rs);padding:.875rem;margin:1.25rem 0;max-height:240px;overflow-y:auto}
+.res-row{display:flex;justify-content:space-between;align-items:center;padding:.35rem 0;font-size:.875rem;border-bottom:1px solid var(--border)}
+.res-row:last-child{border-bottom:none}
+
+/* RESULTS TAB */
+.results-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem}
+.folder-results{display:flex;flex-direction:column;gap:1rem}
+.fr-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem}
+.fr-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem}
+.fr-name{font-weight:600;font-size:1rem}
+.fr-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.5rem;margin-bottom:.875rem}
+.fr-stat{background:var(--surface2);border-radius:var(--rs);padding:.6rem;text-align:center}
+.fr-stat-val{font-size:1.3rem;font-weight:700}
+.fr-stat-lbl{font-size:.68rem;color:var(--muted);margin-top:.15rem}
+.prog-text-sm{font-size:.75rem;color:var(--muted);text-align:right;margin-bottom:.25rem}
+.weak-section{margin-top:.875rem}
+.weak-title{font-size:.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem}
+.weak-item{display:flex;justify-content:space-between;align-items:center;padding:.4rem 0;border-bottom:1px solid var(--border);font-size:.85rem}
+.weak-item:last-child{border-bottom:none}
+.weak-ar{font-family:'Noto Naskh Arabic',serif;font-size:1rem;direction:rtl}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:100}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.75rem;width:100%;max-width:480px;max-height:92vh;overflow-y:auto;box-shadow:var(--shadow)}
+.modal-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.modal-hdr h2{font-size:1.1rem;font-weight:600}
+.modal-close{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:1.1rem;padding:.2rem}
+.modal-close:hover{color:var(--text)}
+.fg{margin-bottom:1.1rem}
+.fg label{display:block;font-size:.8rem;color:var(--muted);font-weight:500;margin-bottom:.35rem}
+.rg{display:flex;gap:1.25rem}
+.rl{display:flex;align-items:center;gap:.35rem;font-size:.875rem;cursor:pointer}
+.modal-actions{display:flex;justify-content:flex-end;gap:.65rem;margin-top:1.25rem}
+.alt-fields{display:flex;flex-direction:column;gap:.4rem;margin-top:.35rem}
+.alt-field-row{display:flex;gap:.4rem;align-items:center}
+.alt-field-row .inp{flex:1}
+
+/* ADD-EXISTING MODAL */
+.existing-list{max-height:340px;overflow-y:auto;display:flex;flex-direction:column;gap:.35rem;margin-top:.75rem}
+.existing-item{display:flex;align-items:center;gap:.75rem;padding:.55rem .85rem;background:var(--surface2);border-radius:var(--rs);cursor:pointer;border:1px solid transparent;transition:border-color .15s}
+.existing-item:hover{border-color:var(--pink)}
+.existing-item input[type="checkbox"]{accent-color:var(--pink);width:14px;height:14px;cursor:pointer;flex-shrink:0}
+.ei-ar{font-family:'Noto Naskh Arabic',serif;font-size:.95rem;direction:rtl}
+.ei-en{font-size:.78rem;color:var(--muted)}
+
+/* MOVE/COPY MODAL */
+.mmc-list{display:flex;flex-direction:column;gap:.4rem;margin-top:.75rem}
+.mmc-folder-btn{display:flex;align-items:center;gap:.75rem;padding:.65rem 1rem;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);cursor:pointer;font-family:inherit;font-size:.875rem;color:var(--text);width:100%;text-align:left;transition:border-color .15s}
+.mmc-folder-btn:hover{border-color:var(--pink);color:var(--pink)}
+
+/* EMPTY */
+.empty{text-align:center;padding:4rem 2rem;color:var(--muted)}
+.empty-icon{font-size:2.5rem;margin-bottom:.875rem}
+.empty h2{font-size:1.2rem;color:var(--text);margin-bottom:.4rem}
+.empty p{margin-bottom:1.25rem;font-size:.875rem}
+
+@media(max-width:700px){
+  .sidebar{width:56px;padding:.875rem .5rem}
+  .logo-en,.nav-btn span,.sidebar-footer{display:none}
+  .logo-ar{font-size:1.3rem}
+  .nav-btn{justify-content:center;padding:.7rem}
+  .main-content{margin-left:56px;padding:1.25rem 1rem}
+  .stats-grid,.results-summary{grid-template-columns:repeat(2,1fr)}
+  .rating-row,.quiz-opts{grid-template-columns:repeat(2,1fr)}
+  .qa-row{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<nav class="sidebar">
+  <div class="logo">
+    <span class="logo-ar">عربي</span>
+    <span class="logo-en">Arabic Study</span>
+  </div>
+  <button class="nav-btn active" data-view="dashboard">
+    <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+    <span>Dashboard</span>
+  </button>
+  <button class="nav-btn" data-view="folders">
+    <svg viewBox="0 0 24 24"><path d="M10 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>
+    <span>Folders</span>
+  </button>
+  <button class="nav-btn" data-view="study">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+    <span>Flashcards</span>
+  </button>
+  <button class="nav-btn" data-view="quiz">
+    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg>
+    <span>Quiz</span>
+  </button>
+  <div class="sidebar-sep"></div>
+  <button class="nav-btn" data-view="results">
+    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>
+    <span>Results</span>
+  </button>
+  <div class="sidebar-footer">
+    <div class="streak-badge">🔥 <span id="streak-count">0</span> day streak</div>
+  </div>
+</nav>
+
+<main class="main-content">
+
+  <!-- DASHBOARD -->
+  <section id="view-dashboard" class="view active">
+    <header class="view-header">
+      <div><h1>Dashboard</h1><p class="sub" id="dash-date"></p></div>
+    </header>
+    <div class="stats-grid">
+      <div class="stat-card s-pink"><div class="stat-val" id="s-due">0</div><div class="stat-lbl">Due Today</div></div>
+      <div class="stat-card s-purple"><div class="stat-val" id="s-mastered">0</div><div class="stat-lbl">Mastered</div></div>
+      <div class="stat-card s-orange"><div class="stat-val" id="s-learning">0</div><div class="stat-lbl">Learning</div></div>
+      <div class="stat-card s-red"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total Cards</div></div>
+    </div>
+    <div class="dash-actions">
+      <button class="btn btn-pink" onclick="app.navigate('study')">Study Flashcards</button>
+      <button class="btn btn-orange" onclick="app.navigate('quiz')">Take a Quiz</button>
+      <button class="btn btn-ghost" onclick="app.navigate('folders')">Manage Folders</button>
+    </div>
+    <div style="margin-bottom:.75rem;font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em">Progress by Folder</div>
+    <div class="folder-progress-list" id="dash-folders"></div>
+  </section>
+
+  <!-- FOLDERS -->
+  <section id="view-folders" class="view">
+    <div id="folder-list-view">
+      <header class="view-header">
+        <div><h1>Folders</h1><p class="sub">Organise cards by subject</p></div>
+        <button class="btn btn-pink" onclick="app.openFolderModal()">+ New Folder</button>
+      </header>
+      <div class="folders-grid" id="folders-grid"></div>
+    </div>
+    <div id="folder-detail-view" style="display:none">
+      <div class="folder-detail-hdr">
+        <button class="back-btn" onclick="app.closeFolderDetail()">← Folders</button>
+        <input class="folder-title-edit" id="folder-title-input" type="text" value="">
+        <button class="btn btn-red btn-sm" onclick="app.deleteCurrentFolder()">Delete Folder</button>
+      </div>
+      <div class="quick-add">
+        <div class="qa-title">Quick Add Card</div>
+        <div class="qa-row">
+          <div><div class="qa-lbl">Arabic *</div><input class="inp inp-ar" id="qa-arabic" dir="rtl" placeholder="مرحبا"></div>
+          <div><div class="qa-lbl">English *</div><input class="inp" id="qa-english" placeholder="Hello"></div>
+          <div><div class="qa-lbl">Transliteration</div><input class="inp" id="qa-trans" placeholder="Marhaba"></div>
+          <div><div class="qa-lbl">&nbsp;</div><button class="btn btn-pink" id="btn-qa-add">+ Add</button></div>
+        </div>
+        <div class="qa-bottom">
+          <select class="sel" id="qa-type"><option value="vocabulary">Vocabulary</option><option value="phrase">Phrase</option></select>
+          <button class="btn btn-ghost btn-sm" onclick="app.openExistingModal()">+ Add existing cards</button>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.875rem">
+        <span id="folder-cards-count" style="font-size:.8rem;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em"></span>
+      </div>
+      <div class="cards-grid" id="folder-cards-grid"></div>
+      <div id="folder-empty" class="empty" style="display:none">
+        <div class="empty-icon">📂</div><h2>No cards yet</h2><p>Use Quick Add above to start building this folder.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FLASHCARDS -->
+  <section id="view-study" class="view">
+    <!-- Folder picker -->
+    <div id="study-picker">
+      <div class="picker-header">
+        <h1>Flashcards</h1>
+        <p>Choose a folder to study:</p>
+      </div>
+      <div class="picker-grid" id="study-picker-grid"></div>
+    </div>
+    <!-- Active study -->
+    <div id="study-active" style="display:none">
+      <div class="study-active-hdr">
+        <button class="back-btn" onclick="app.backToStudyPicker()">← Change folder</button>
+        <span class="studying-folder-tag" id="study-folder-tag"></span>
+        <select class="sel" id="study-filter"><option value="due">Due cards</option><option value="all">All cards</option><option value="new">New only</option></select>
+      </div>
+      <div id="study-empty" class="empty" style="display:none">
+        <div class="empty-icon">✓</div><h2>All caught up!</h2><p>No cards due. Switch to "All cards" to keep studying.</p>
+        <button class="btn btn-ghost btn-sm" onclick="app.setStudyFilter('all')">Study all cards</button>
+      </div>
+      <div id="fc-wrapper">
+        <div class="prog-bar-area">
+          <div class="prog-text-row"><span id="study-prog-text"></span><span id="study-prog-pct"></span></div>
+          <div class="prog-wrap"><div class="prog-fill" id="study-prog-bar"></div></div>
+        </div>
+        <div class="fc-scene" id="fc-scene">
+          <div class="fc" id="flashcard">
+            <div class="fc-face fc-front">
+              <div class="fc-badge" id="fc-badge"></div>
+              <div class="fc-ar" id="fc-ar" dir="rtl"></div>
+              <div class="fc-tr" id="fc-tr"></div>
+              <div class="fc-hint">Tap to reveal</div>
+            </div>
+            <div class="fc-face fc-back">
+              <div class="fc-en" id="fc-en"></div>
+              <div class="fc-ar-sm" id="fc-ar-sm" dir="rtl"></div>
+              <div class="fc-alts" id="fc-alts"></div>
+              <div class="fc-tag" id="fc-tag"></div>
+            </div>
+          </div>
+        </div>
+        <div class="rating-area" id="rating-area" style="display:none">
+          <p class="rating-lbl">How well did you know it?</p>
+          <div class="rating-row">
+            <button class="r-btn r-again" data-q="0"><span class="r-name">Again</span><span class="r-int">&lt;1d</span></button>
+            <button class="r-btn r-hard" data-q="1"><span class="r-name">Hard</span><span class="r-int" id="ri-hard"></span></button>
+            <button class="r-btn r-good" data-q="2"><span class="r-name">Good</span><span class="r-int" id="ri-good"></span></button>
+            <button class="r-btn r-easy" data-q="3"><span class="r-name">Easy</span><span class="r-int" id="ri-easy"></span></button>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:.875rem">
+          <button class="btn btn-ghost" id="btn-flip">Flip card</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="view-quiz" class="view">
+    <!-- Setup -->
+    <div id="quiz-setup-screen">
+      <header class="view-header"><h1>Quiz</h1></header>
+      <div class="quiz-setup-panel">
+        <div class="qs-title">Quiz Setup</div>
+        <div class="qs-section">
+          <div class="qs-label">Study from</div>
+          <select class="sel qs-folder-sel" id="qs-folder" style="width:100%">
+            <option value="">— Select a folder —</option>
+            <option value="all">All Topics (Mix)</option>
+          </select>
+        </div>
+        <div class="qs-section">
+          <div class="qs-label">Quiz type</div>
+          <div class="opt-group" id="qs-mode-group">
+            <button class="opt-btn active" data-mode="mc">Multiple Choice</button>
+            <button class="opt-btn" data-mode="type">Type Answer</button>
+          </div>
+        </div>
+        <div class="qs-section">
+          <div class="qs-label">Number of questions</div>
+          <div class="opt-group" id="qs-count-group">
+            <button class="opt-btn active" data-count="10">10</button>
+            <button class="opt-btn" data-count="20">20</button>
+            <button class="opt-btn" data-count="30">30</button>
+            <button class="opt-btn" data-count="0">All</button>
+          </div>
+        </div>
+        <button class="btn btn-pink qs-start-btn" id="btn-start-quiz" disabled>Start Quiz</button>
+      </div>
+    </div>
+    <!-- Session -->
+    <div id="quiz-session" style="display:none">
+      <div class="quiz-meta"><span id="q-num">Q 1/10</span><span>Score: <strong id="q-score">0</strong></span></div>
+      <div class="qprog-wrap"><div class="prog-fill" id="quiz-prog"></div></div>
+      <!-- Question card -->
+      <div class="quiz-q-card">
+        <p class="q-prompt" id="q-prompt"></p>
+        <div class="q-ar" id="q-ar"></div>
+        <div class="q-tr" id="q-tr"></div>
+      </div>
+      <!-- MC options -->
+      <div id="mc-section">
+        <div class="quiz-opts" id="quiz-opts"></div>
+      </div>
+      <!-- Type answer -->
+      <div id="ta-section" style="display:none">
+        <div class="ta-area">
+          <div class="ta-input-row">
+            <input class="inp inp-lg" id="ta-input" placeholder="Type the English meaning or transliteration…" autocomplete="off" autocorrect="off" spellcheck="false">
+            <button class="btn btn-pink" id="btn-ta-submit">Submit</button>
+          </div>
+        </div>
+        <div id="ta-feedback" style="display:none">
+          <div class="ta-feedback" id="ta-feedback-inner">
+            <div>
+              <div class="ta-result-text" id="ta-result-text"></div>
+              <div class="ta-correct-show" id="ta-correct-show"></div>
+            </div>
+            <div class="ta-actions">
+              <button class="btn btn-ghost btn-sm" id="btn-ta-override" style="display:none">Override: Mark Correct</button>
+              <button class="btn btn-pink btn-sm" id="btn-ta-next">Continue →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Results -->
+    <div id="quiz-results" style="display:none">
+      <div class="results-card">
+        <div class="res-circle" id="res-circle"></div>
+        <h2 id="res-title"></h2>
+        <p id="res-sub" style="color:var(--muted);margin-top:.4rem"></p>
+        <div class="res-breakdown" id="res-breakdown"></div>
+        <div style="display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin-top:.5rem">
+          <button class="btn btn-pink" id="btn-quiz-again">Play Again</button>
+          <button class="btn btn-ghost" onclick="app.showQuizSetup()">Change Settings</button>
+          <button class="btn btn-ghost" onclick="app.navigate('results')">View Results</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- RESULTS -->
+  <section id="view-results" class="view">
+    <header class="view-header"><div><h1>Results</h1><p class="sub">Progress and performance by folder</p></div></header>
+    <div class="results-summary">
+      <div class="stat-card s-pink"><div class="stat-val" id="rs-quizzes">0</div><div class="stat-lbl">Quizzes Taken</div></div>
+      <div class="stat-card s-purple"><div class="stat-val" id="rs-accuracy">—</div><div class="stat-lbl">Quiz Accuracy</div></div>
+      <div class="stat-card s-orange"><div class="stat-val" id="rs-reviewed">0</div><div class="stat-lbl">Cards Reviewed</div></div>
+      <div class="stat-card s-red"><div class="stat-val" id="rs-mastered">0</div><div class="stat-lbl">Mastered</div></div>
+    </div>
+    <div class="folder-results" id="folder-results"></div>
+
+    <!-- Data Recovery -->
+    <div style="margin-top:2rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:1.25rem">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.875rem;flex-wrap:wrap;gap:.5rem">
+        <div>
+          <div style="font-weight:600;font-size:.95rem">Data Recovery</div>
+          <div style="font-size:.78rem;color:var(--muted);margin-top:.15rem">Restore cards from a previous version saved in your browser</div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="app.renderRecovery()">Scan for old data</button>
+      </div>
+      <div id="recovery-panel"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODAL: Add/Edit Card -->
+<div id="modal-card" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-hdr"><h2 id="mc-title">Add Card</h2><button class="modal-close" onclick="app.closeCardModal()">✕</button></div>
+    <form id="card-form">
+      <input type="hidden" id="cf-id">
+      <div class="fg"><label>Type</label>
+        <div class="rg"><label class="rl"><input type="radio" name="ctype" value="vocabulary" checked> Vocabulary</label><label class="rl"><input type="radio" name="ctype" value="phrase"> Phrase</label></div>
+      </div>
+      <div class="fg"><label>Arabic <span style="color:var(--red)">*</span></label><input class="inp inp-ar" id="cf-arabic" dir="rtl" placeholder="مرحبا" required></div>
+      <div class="fg"><label>English <span style="color:var(--red)">*</span></label><input class="inp" id="cf-english" placeholder="Hello" required></div>
+      <div class="fg"><label>Transliteration <span style="color:var(--muted);font-size:.72rem;font-weight:400">(optional)</span></label><input class="inp" id="cf-trans" placeholder="Marhaba"></div>
+      <div class="fg">
+        <label>Alternative / acceptable answers <span style="color:var(--muted);font-size:.72rem;font-weight:400">(Franco, variants, typo forgiveness)</span></label>
+        <div class="alt-fields" id="alt-fields">
+          <div class="alt-field-row"><input class="inp" placeholder="e.g. 3ahlan, ya3ni…"><button type="button" class="icon-btn danger" onclick="this.closest('.alt-field-row').remove()">✕</button></div>
+        </div>
+        <button type="button" class="btn btn-ghost btn-sm" style="margin-top:.4rem" onclick="app.addAltField()">+ Add another answer</button>
+      </div>
+      <div class="fg"><label>Notes <span style="color:var(--muted);font-size:.72rem;font-weight:400">(optional)</span></label><textarea class="inp" id="cf-notes" rows="2" placeholder="Additional context…"></textarea></div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" onclick="app.closeCardModal()">Cancel</button>
+        <button type="submit" class="btn btn-pink">Save Card</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- MODAL: New/Edit Folder -->
+<div id="modal-folder" class="modal-overlay" style="display:none">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr"><h2>New Folder</h2><button class="modal-close" onclick="app.closeFolderModal()">✕</button></div>
+    <div class="fg"><label>Folder name <span style="color:var(--red)">*</span></label><input class="inp" id="mf-name" placeholder="e.g. Greetings, Lesson 3" required></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="app.closeFolderModal()">Cancel</button>
+      <button class="btn btn-pink" onclick="app.saveFolderModal()">Create Folder</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Add Existing Cards -->
+<div id="modal-existing" class="modal-overlay" style="display:none">
+  <div class="modal">
+    <div class="modal-hdr"><h2>Add Existing Cards</h2><button class="modal-close" onclick="app.closeExistingModal()">✕</button></div>
+    <p style="font-size:.85rem;color:var(--muted)">Select cards to add to this folder:</p>
+    <div class="existing-list" id="existing-list"></div>
+    <div class="modal-actions" style="margin-top:.875rem">
+      <button class="btn btn-ghost" onclick="app.closeExistingModal()">Cancel</button>
+      <button class="btn btn-pink" onclick="app.confirmAddExisting()">Add Selected</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Move / Copy Card -->
+<div id="modal-move-copy" class="modal-overlay" style="display:none">
+  <div class="modal" style="max-width:360px">
+    <div class="modal-hdr"><h2 id="mmc-title">Move card to…</h2><button class="modal-close" onclick="app.closeMCModal()">✕</button></div>
+    <p style="font-size:.82rem;color:var(--muted);margin-bottom:.25rem" id="mmc-card-preview"></p>
+    <div class="mmc-list" id="mmc-folder-list"></div>
+    <div class="modal-actions"><button class="btn btn-ghost" onclick="app.closeMCModal()">Cancel</button></div>
+  </div>
+</div>
+
+<script>
+// ── HELPERS ──────────────────────────────────────────────────────────────────
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
+const COLORS = ['f-pink','f-orange','f-red','f-purple'];
+const fc = (i) => COLORS[i % COLORS.length];
+const sortFolders = arr => [...arr].sort((a,b) => a.name.localeCompare(b.name));
+const norm = s => (s||'').trim().toLowerCase().replace(/[.,!?،؟'"'"'"]/g,'').replace(/\s+/g,' ');
+
+// ── BUNDLED SEED DATA (163 cards, 12 folders) ────────────────────────────────
+const SEED_DATA = {"cards":[{"id":"1","type":"vocabulary","arabic":"مرحبا","english":"Hello","transliteration":"Marhaba","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"2","type":"vocabulary","arabic":"شكراً","english":"Thank you","transliteration":"Shukran","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"3","type":"vocabulary","arabic":"نعم","english":"Yes","transliteration":"Na'am","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"4","type":"vocabulary","arabic":"لا","english":"No","transliteration":"La","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"5","type":"vocabulary","arabic":"من فضلك","english":"Please","transliteration":"Min fadlak","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"6","type":"vocabulary","arabic":"مع السلامة","english":"Goodbye","transliteration":"Ma'a as-salama","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"7","type":"phrase","arabic":"كيف حالك؟","english":"How are you?","transliteration":"Kayfa halak?","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"8","type":"phrase","arabic":"أنا بخير","english":"I am fine","transliteration":"Ana bikhayr","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"9","type":"phrase","arabic":"ما اسمك؟","english":"What is your name?","transliteration":"Ma ismuk?","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"10","type":"phrase","arabic":"صباح الخير","english":"Good morning","transliteration":"Sabah al-khayr","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"11","type":"phrase","arabic":"مساء الخير","english":"Good evening","transliteration":"Masa' al-khayr","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"12","type":"vocabulary","arabic":"بيت","english":"House","transliteration":"Bayt","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"13","type":"vocabulary","arabic":"كتاب","english":"Book","transliteration":"Kitab","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"14","type":"vocabulary","arabic":"ماء","english":"Water","transliteration":"Ma'a","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"15","type":"vocabulary","arabic":"خبز","english":"Bread","transliteration":"Khubz","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"16","type":"vocabulary","arabic":"يمين","english":"Right","transliteration":"Yamin","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"17","type":"vocabulary","arabic":"يسار","english":"Left","transliteration":"Yasar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776773885179,"created":1776773885179,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r4a3gorg3bd1xbng","type":"vocabulary","arabic":"مين","english":"min","transliteration":"who","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783664924,"created":1776783664924,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r4fx7gw57gwodg89","type":"vocabulary","arabic":"شو","english":"what","transliteration":"shu","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783672475,"created":1776783672475,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r4l7vgn1sfo61z5m","type":"vocabulary","arabic":"وين","english":"where","transliteration":"wein","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783679339,"created":1776783679339,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r4rzjllzmcr2e5hr","type":"vocabulary","arabic":"إيمتى","english":"when","transliteration":"aymata","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783688111,"created":1776783688111,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r55mkbmk5kn46bkm","type":"vocabulary","arabic":"ليه","english":"why","transliteration":"leh","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783705788,"created":1776783705788,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r5aufx5elcsreybs","type":"vocabulary","arabic":"كيف","english":"how","transliteration":"keif","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783712551,"created":1776783712551,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r5i0rkomjkqmrl1h","type":"vocabulary","arabic":"أيّ","english":"ayya","transliteration":"which","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783721851,"created":1776783721851,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r5psk77l775w9tgn","type":"vocabulary","arabic":"بس","english":"but","transliteration":"bass","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783731924,"created":1776783731924,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r5ydrfqygao2fcbc","type":"vocabulary","arabic":"في","english":"there is","transliteration":"fi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783743055,"created":1776783743055,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r63ubzvymxje7e1f","type":"vocabulary","arabic":"بالـ","english":"in the","transliteration":"bil","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783750131,"created":1776783750131,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r69pke31rawkjvw","type":"vocabulary","arabic":"بـ","english":"in","transliteration":"bi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783757736,"created":1776783757736,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r6netopf0tlbt2ej","type":"vocabulary","arabic":"أو","english":"or","transliteration":"aw","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783775493,"created":1776783775493,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r6t5aulqqeqq4y4","type":"vocabulary","arabic":"هون","english":"here","transliteration":"hon","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783782926,"created":1776783782926,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r6z1evs4mtuju5pg","type":"vocabulary","arabic":"هونيك","english":"there","transliteration":"honik","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783790562,"created":1776783790562,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r7mtcoufpzxl2rb","type":"vocabulary","arabic":"هيدا","english":"this [ m ]","transliteration":"hayda","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783821376,"created":1776783821376,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r81c4rpjukjml9k","type":"vocabulary","arabic":"هيدي","english":"this [ f ]","transliteration":"hayde","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783840196,"created":1776783840196,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r8okte2m472sdoi9","type":"vocabulary","arabic":"كتير","english":"very","transliteration":"ktiir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783870317,"created":1776783870317,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r8unkho38xcklj7s","type":"vocabulary","arabic":"شي","english":"something","transliteration":"shi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783878192,"created":1776783878192,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r92nx0nka29v563lf","type":"vocabulary","arabic":"كمان","english":"also / too","transliteration":"kameen","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783888573,"created":1776783888573,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r9b3q0cxop9jt15pb","type":"vocabulary","arabic":"شوي","english":"little","transliteration":"shway","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783899510,"created":1776783899510,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r9hv7wau3lvxxej","type":"vocabulary","arabic":"بلا","english":"without","transliteration":"bala","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783908275,"created":1776783908275,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8r9ns2wzv22eksn8","type":"vocabulary","arabic":"لازم","english":"lezim","transliteration":"must","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783915938,"created":1776783915938,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8ra7y9n1c32075zod","type":"vocabulary","arabic":"لأنّه","english":"because","transliteration":"la2anno","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776783942081,"created":1776783942081,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rbsyfs4pwmxhcvar","type":"vocabulary","arabic":"امبارح","english":"yesterday","transliteration":"mbere7","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784015959,"created":1776784015959,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rvxnw3vcmfx9sni7","type":"vocabulary","arabic":"اليوم","english":"today","transliteration":"lyom","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784955180,"created":1776784955180,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rw506jek6w18kx3a","type":"vocabulary","arabic":"أسبوع","english":"week","transliteration":"osbou3","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784964694,"created":1776784964694,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rwgjxoryr7vqo6rp","type":"vocabulary","arabic":"كل يوم","english":"every day","transliteration":"kel yawm","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784979661,"created":1776784979661,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rwliqxk4lymncd0a","type":"vocabulary","arabic":"عادةً","english":"usually","transliteration":"adatan","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784986098,"created":1776784986098,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rwvba5nezk8bmo6n","type":"vocabulary","arabic":"بعد","english":"after","transliteration":"ba3d","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776784998790,"created":1776784998790,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rx2ym9c6i4uk1k94","type":"vocabulary","arabic":"هلأ","english":"now","transliteration":"halla2","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785008702,"created":1776785008702,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rxogfm0gni8q902","type":"vocabulary","arabic":"غير مرة","english":"another time","transliteration":"ghayr marra","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785036559,"created":1776785036559,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8rxstxr5hcydejuwg","type":"vocabulary","arabic":"بكير","english":"early","transliteration":"bakir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785042229,"created":1776785042229,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8ry02lcd0wsnxl5nb","type":"vocabulary","arabic":"مأخر","english":"late","transliteration":"m2akhhar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785051613,"created":1776785051613,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8ry81dlwmrcyavpjk","type":"vocabulary","arabic":"مس","english":"evening","transliteration":"masa","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785061937,"created":1776785061937,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s04bt01kxp5vvttph","type":"vocabulary","arabic":"بكرا","english":"tomorrow","transliteration":"bokra","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785150441,"created":1776785150441,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s0f5icwoxdzoy7dl","type":"vocabulary","arabic":"الأسبوع الماضي","english":"last weekend","transliteration":"el osbou3 el madi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785164470,"created":1776785164470,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s0sg3k1nc9dwkkdh","type":"vocabulary","arabic":"الأسبوع الجاي","english":"next week","transliteration":"el osbou3 el jayye","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785181699,"created":1776785181699,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s1nnenp6vz9n45yk","type":"vocabulary","arabic":"نهاية الأسبوع","english":"last weekend","transliteration":"nihayet el osbou3","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785222138,"created":1776785222138,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s25m4t3g1milvq8i","type":"vocabulary","arabic":"شهر","english":"month","transliteration":"shahr","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785245420,"created":1776785245420,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s2b06xa6y5z2eeus","type":"vocabulary","arabic":"سنة","english":"year","transliteration":"sene","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785252406,"created":1776785252406,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s2qer9l06s45eant","type":"vocabulary","arabic":"قبل","english":"before","transliteration":"abel","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785272371,"created":1776785272371,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s2z3tpoznavlw1lm","type":"vocabulary","arabic":"وقت","english":"time","transliteration":"wa2et","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785283641,"created":1776785283641,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s376dhbv69kr5kse","type":"vocabulary","arabic":"الأسبوع الماضي","english":"last week","transliteration":"el osbou3 el madi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785294101,"created":1776785294101,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s3hlyyuj7duswlbi","type":"vocabulary","arabic":"هذا الأسبوع","english":"this week","transliteration":"hal asbou3","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785307622,"created":1776785307622,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s3ye2pjus7mbtgc","type":"vocabulary","arabic":"الأسبوع الجاي","english":"next week","transliteration":"el osbou3 el jayye","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785329370,"created":1776785329370,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s5yijomtia0408ld","type":"vocabulary","arabic":"أحياناً","english":"sometimes","transliteration":"a7yanan","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785422843,"created":1776785422843,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s683nqvqqondc2e8","type":"vocabulary","arabic":"ولا مرة","english":"never","transliteration":"walla marra","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785435267,"created":1776785435267,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s6sst0cdeifvwni8r","type":"vocabulary","arabic":"أسود","english":"black","transliteration":"aswad","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785462093,"created":1776785462093,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s70gtsy0dx90uek","type":"vocabulary","arabic":"أزرق","english":"blue","transliteration":"azra2","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785472029,"created":1776785472029,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s758xp04nwgdesz","type":"vocabulary","arabic":"أبيض","english":"abyad","transliteration":"white","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785478225,"created":1776785478225,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s7b0tl7774v715v","type":"vocabulary","arabic":"أحمر","english":"red","transliteration":"ahmar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785485709,"created":1776785485709,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s7i7c681lrsofl6w","type":"vocabulary","arabic":"أخضر","english":"green","transliteration":"akhdar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785495016,"created":1776785495016,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s7obupuuheyo3gwb","type":"vocabulary","arabic":"أصفر","english":"yellow","transliteration":"asfar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785502954,"created":1776785502954,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s7vzjuk8y1eq8ab8","type":"vocabulary","arabic":"زهري","english":"pink","transliteration":"zahri","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785512879,"created":1776785512879,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s89dhr58psxqvlk","type":"vocabulary","arabic":"برتقالي","english":"orange","transliteration":"burta2ali","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785530229,"created":1776785530229,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s8e9xaaoiaw6wk2j","type":"vocabulary","arabic":"بني","english":"brown","transliteration":"banni","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785536581,"created":1776785536581,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8s8xudss9w99kpnzb","type":"vocabulary","arabic":"موف","english":"purple","transliteration":"mov","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785561941,"created":1776785561941,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sb6lu3qbnh4kphta","type":"vocabulary","arabic":"فستان","english":"dress","transliteration":"fustan","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785666610,"created":1776785666610,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sbc1bak62plh5q2h","type":"vocabulary","arabic":"تنورة","english":"skirt","transliteration":"tannoura","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785673647,"created":1776785673647,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sbii8wnvisqk0ye","type":"vocabulary","arabic":"كنزة","english":"top","transliteration":"kenze","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785682032,"created":1776785682032,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sbrblribageoobjb","type":"vocabulary","arabic":"جزدان","english":"bag","transliteration":"jizdan","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785693457,"created":1776785693457,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sbvljzndyjvyft6n","type":"vocabulary","arabic":"قميص","english":"shirt","transliteration":"amis","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785698999,"created":1776785698999,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sc17qob6itu1py38","type":"vocabulary","arabic":"صباط","english":"sobat","transliteration":"shoes","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785706278,"created":1776785706278,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8scapnj7lfawv7las","type":"vocabulary","arabic":"ضيّق","english":"tight","transliteration":"dayye2","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785718587,"created":1776785718587,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8scgvbop5vr9u0kje","type":"vocabulary","arabic":"واسع","english":"loose","transliteration":"wesi3","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785726567,"created":1776785726567,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8scmny5k6fkztu9zc","type":"vocabulary","arabic":"قياس","english":"size","transliteration":"2yes","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785734078,"created":1776785734078,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sd6groyazrtr8ta8","type":"vocabulary","arabic":"دقائق","english":"minute","transliteration":"da2aye2","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785759739,"created":1776785759739,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sde2aexefqqnylwn","type":"vocabulary","arabic":"ثواني","english":"seconds","transliteration":"thawing","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785769586,"created":1776785769586,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sdj4zz95dom158i","type":"vocabulary","arabic":"ساعات","english":"hours","transliteration":"se3at","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785776163,"created":1776785776163,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sfdh9n0kem97tvud","type":"vocabulary","arabic":"كعب عالي","english":"high heels","transliteration":"ka3eb 3aali","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785862141,"created":1776785862141,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sfwq3xztxkxt1vf9","type":"vocabulary","arabic":"مانطو","english":"coat","transliteration":"manteau","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785887083,"created":1776785887083,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sgumn7w4ubu1s1l4","type":"vocabulary","arabic":"بنطلون","english":"pants","transliteration":"bantaloun","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785931023,"created":1776785931023,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8shgni7cr1ttu5xln","type":"vocabulary","arabic":"خزانة","english":"wardrobe","transliteration":"khazane","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785959566,"created":1776785959566,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8shx9sw3w0myv4sq","type":"vocabulary","arabic":"تياب","english":"clothes","transliteration":"tyeb","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776785981104,"created":1776785981104,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8skmgk4tnwmo48gpa","type":"phrase","arabic":"قدّيش حقّه؟","english":"how much is it?","transliteration":"adde ha2o?","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786107060,"created":1776786107060,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sky1xfsakc21fj5e","type":"vocabulary","arabic":"سعر","english":"price","transliteration":"se3er","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786122085,"created":1776786122085,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sl42jc0l4s9h6vy8","type":"vocabulary","arabic":"غالي","english":"expensive","transliteration":"ghali","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786129883,"created":1776786129883,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8slb9t4z6gf11awx","type":"vocabulary","arabic":"رخيص","english":"cheap","transliteration":"rkhis","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786139217,"created":1776786139217,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sliwknujm9heq0fa","type":"vocabulary","arabic":"خصم","english":"discount","transliteration":"khasem","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786149108,"created":1776786149108,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8smhbhz8x3xxsucmr","type":"vocabulary","arabic":"إذا","english":"if","transliteration":"iza","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786193709,"created":1776786193709,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8smvlaso0frq9b6k","type":"vocabulary","arabic":"هيداك","english":"that [ m ]","transliteration":"haydak","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786212206,"created":1776786212206,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sn7p2xnbv32k7ric","type":"vocabulary","arabic":"هيديك","english":"that [ f ]","transliteration":"haydik","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786227894,"created":1776786227894,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sno3od7the4e1eec","type":"vocabulary","arabic":"هول","english":"these / those","transliteration":"hol","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786249156,"created":1776786249156,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8so823vr0gadoy0i9","type":"vocabulary","arabic":"مين","english":"who","transliteration":"min","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786275019,"created":1776786275019,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8socdgvqg0p36h0u","type":"vocabulary","arabic":"شو","english":"what","transliteration":"shu","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786280612,"created":1776786280612,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sogk2ftn0bp78cht","type":"vocabulary","arabic":"وين","english":"where","transliteration":"wein","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786286034,"created":1776786286034,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8somxdhgalvt0gngu","type":"vocabulary","arabic":"إيمتى","english":"when","transliteration":"aymara","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786294289,"created":1776786294289,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8soyifdzztn9orgh8","type":"vocabulary","arabic":"ليه","english":"why","transliteration":"leh","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786309303,"created":1776786309303,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sp4fac4e33ggkwkn","type":"vocabulary","arabic":"كيف","english":"how","transliteration":"keif","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786316966,"created":1776786316966,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sp93zo6j0mws0jgc","type":"vocabulary","arabic":"أيّ","english":"which","transliteration":"ayya","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786323039,"created":1776786323039,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8su90bhp14z0n6bxj","type":"vocabulary","arabic":"بس","english":"but","transliteration":"bass","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786556187,"created":1776786556187,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sud4m0xu6ej41sz7","type":"vocabulary","arabic":"في","english":"there is","transliteration":"fi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786561526,"created":1776786561526,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sujy4fyttfe3ejq","type":"vocabulary","arabic":"بالـ","english":"in the","transliteration":"bil","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786570364,"created":1776786570364,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8suppmc1la55w1bbm","type":"vocabulary","arabic":"بـ","english":"in","transliteration":"bi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786577834,"created":1776786577834,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sv3zct9wgotxptbi","type":"vocabulary","arabic":"أو","english":"or","transliteration":"aw","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786596328,"created":1776786596328,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8svi4j84m1eupse5e","type":"vocabulary","arabic":"هون","english":"here","transliteration":"hon","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786614659,"created":1776786614659,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8svlc686tugs7gc97","type":"vocabulary","arabic":"هونيك","english":"there","transliteration":"honk","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786618822,"created":1776786618822,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8svu6ng9ywkpo63fk","type":"vocabulary","arabic":"هيدا","english":"this [ m ]","transliteration":"hayda","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786630287,"created":1776786630287,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8svzs63ixr7swp8qs","type":"vocabulary","arabic":"هيدي","english":"this [ f ]","transliteration":"hayde","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786637542,"created":1776786637542,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sx4g3td6831g5nkn","type":"vocabulary","arabic":"كتير","english":"very","transliteration":"ktiir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786690243,"created":1776786690243,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sx98xm1uocxz3peb","type":"vocabulary","arabic":"شي","english":"something","transliteration":"shi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786696465,"created":1776786696465,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sxeid0u2djxll835s","type":"vocabulary","arabic":"كمان","english":"also / too","transliteration":"kameen","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786703285,"created":1776786703285,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sxkshtt1emkn3oj","type":"vocabulary","arabic":"شوي","english":"alittle","transliteration":"shway","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786711425,"created":1776786711425,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sxptmp1j3n30jxz7","type":"vocabulary","arabic":"بلا","english":"without","transliteration":"bala","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786717946,"created":1776786717946,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sxvzsumq3h1hup1","type":"vocabulary","arabic":"لازم","english":"must","transliteration":"lezim","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786725944,"created":1776786725944,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sy3kbilyksyadpc","type":"vocabulary","arabic":"لكن","english":"then / so / however","transliteration":"laken","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786735755,"created":1776786735755,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sykehhd8r8igmc9e","type":"vocabulary","arabic":"قهوة","english":"coffee","transliteration":"ahwe","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786757577,"created":1776786757577,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8syprvhjwq81rugla","type":"vocabulary","arabic":"حليب","english":"milk","transliteration":"halib","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786764539,"created":1776786764539,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sytkcljp33yi6pd","type":"vocabulary","arabic":"سكر","english":"sugar","transliteration":"sukkar","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786769452,"created":1776786769452,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8syzo2qlq5xnyx9ff","type":"vocabulary","arabic":"فاتورة","english":"bill","transliteration":"fatoora","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786777362,"created":1776786777362,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8sz94tdj3vc4yw6et","type":"vocabulary","arabic":"ادفع","english":"I pay","transliteration":"edfa3","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786789629,"created":1776786789629,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8szoc1mpmt60w1msd","type":"vocabulary","arabic":"فطور","english":"breakfast","transliteration":"terwi2a","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786809329,"created":1776786809329,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8szxxdwwneztw0tt","type":"vocabulary","arabic":"غدا","english":"lunch","transliteration":"ghada","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786821761,"created":1776786821761,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t06utarnh33cjpus","type":"vocabulary","arabic":"عشا","english":"dinner","transliteration":"3asha","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786833333,"created":1776786833333,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t0uidkk1obynuco8","type":"vocabulary","arabic":"ولا شي","english":"nothing","transliteration":"wala shi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786863989,"created":1776786863989,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t14hnw2b3rnu3ve","type":"vocabulary","arabic":"كل شي","english":"everything","transliteration":"kel shi","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786876923,"created":1776786876923,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t1badyztuktkmsu","type":"vocabulary","arabic":"حدا","english":"someone","transliteration":"hada","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786885733,"created":1776786885733,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t1kf0xw49fdbpbyl","type":"vocabulary","arabic":"ولا حدا","english":"no one","transliteration":"wala hada","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786897564,"created":1776786897564,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t2aywptj5xjn97ah","type":"vocabulary","arabic":"كل الناس","english":"everyone","transliteration":"kel nas","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786931976,"created":1776786931976,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t34apm22oe3okoj","type":"vocabulary","arabic":"بنص","english":"during","transliteration":"b nos","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786969985,"created":1776786969985,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t3c0yp8l1nrgl3h","type":"vocabulary","arabic":"أوقات","english":"sometimes","transliteration":"aw2at","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776786980002,"created":1776786980002,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8t44ozh0ckv3tg4iw","type":"vocabulary","arabic":"أبداً","english":"never","transliteration":"abadan","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787017155,"created":1776787017155,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tg7rthk4jckbnd","type":"vocabulary","arabic":"صغير","english":"small","transliteration":"zghiir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787581017,"created":1776787581017,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tgff8w1j9p8eqdyd","type":"vocabulary","arabic":"سخن","english":"hot [ temperature ]","transliteration":"sokhon","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787590932,"created":1776787590932,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tgmlwpu1a6vnawqm","type":"vocabulary","arabic":"وسط","english":"wasat","transliteration":"medium","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787600244,"created":1776787600244,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tgwoufado0fuq344","type":"vocabulary","arabic":"بارد","english":"cold [ temperature ]","transliteration":"berid","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787613310,"created":1776787613310,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8th6k9hfceyoe86dp","type":"vocabulary","arabic":"كبير","english":"big / large","transliteration":"kbiir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787626105,"created":1776787626105,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8ti3xml9a0my235t","type":"vocabulary","arabic":"عصير","english":"juice","transliteration":"3asiir","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787669354,"created":1776787669354,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tiijvued3r67hufr","type":"phrase","arabic":"بدّي اطلب","english":"I want to order","transliteration":"badde otlob","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787688299,"created":1776787688299,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tit5wr2uifn7gjbq","type":"vocabulary","arabic":"شي تاني","english":"anything else","transliteration":"shi tene","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787702052,"created":1776787702052,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tj7a2hjb0rhsx7p5","type":"phrase","arabic":"تكرم عيونك","english":"with pleasure","transliteration":"tikram 3aynak","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787720346,"created":1776787720346,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tjpoyr09rlf1sbdf","type":"vocabulary","arabic":"نعيّط","english":"we call ( someone )","transliteration":"n3ayyet","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787744210,"created":1776787744210,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tjuz2sf2l6lj8oc9","type":"vocabulary","arabic":"محل","english":"place","transliteration":"mahal","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787751054,"created":1776787751054,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tk38k3jex1u6ldl3","type":"vocabulary","arabic":"شخصين","english":"two people","transliteration":"shakhsein","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787761764,"created":1776787761764,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tka7vac0qsn37nwn","type":"vocabulary","arabic":"طاولة","english":"table","transliteration":"tawle","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787770811,"created":1776787770811,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tkmgkab5u9fnjmoe","type":"phrase","arabic":"خد وقتك","english":"take your time","transliteration":"khod wa2tak","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787786676,"created":1776787786676,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tl5aezjbkwr321mg","type":"phrase","arabic":"لو سمحت","english":"excuse me","transliteration":"law sama7t","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776787811078,"created":1776787811078,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tpiito4ds4j3vngb","type":"phrase","arabic":"ممكن","english":"can I","transliteration":"momkin","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788014853,"created":1776788014853,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tppwkz7v9l2347v9","type":"vocabulary","arabic":"زيادة","english":"extra","transliteration":"ziyede","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788024420,"created":1776788024420,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tq08hgxvr3k4823u","type":"vocabulary","arabic":"خفيف","english":"light","transliteration":"khafif","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788037809,"created":1776788037809,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tq9rbbu65638s3i","type":"vocabulary","arabic":"عندن","english":"they have","transliteration":"3andon","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788050151,"created":1776788050151,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tqhostagcluu4vrk","type":"vocabulary","arabic":"حلو","english":"helou","transliteration":"sweets","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788060428,"created":1776788060428,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tqtq2yxbaejn8j5","type":"phrase","arabic":"فينا نزيد","english":"can we add","transliteration":"fina nzid","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788076026,"created":1776788076026,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8tr34ek97ow6x8v5","type":"vocabulary","arabic":"كاس","english":"cup / glass","transliteration":"kas","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788088206,"created":1776788088206,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8trgg0bsdhqaid4kp","type":"vocabulary","arabic":"قنينة","english":"bottle","transliteration":"2anine","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788105472,"created":1776788105472,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]},{"id":"mo8trngjp8ao9r7mdwm","type":"vocabulary","arabic":"جاهز","english":"ready","transliteration":"jehiz","notes":"","interval":1,"easeFactor":2.5,"repetitions":0,"status":"new","due":1776788114563,"created":1776788114563,"reviewCount":0,"correctCount":0,"lastReviewed":null,"altAnswers":[]}],"folders":[{"id":"f1","name":"Greetings","cardIds":["1","2","3","4","5","6","7","8","9","10","11"],"created":1776773885179},{"id":"mo8lbpeg5em2oxwme84","name":"7. ORDERING + FOOD","cardIds":["mo8sykehhd8r8igmc9e","mo8syprvhjwq81rugla","mo8sytkcljp33yi6pd","mo8syzo2qlq5xnyx9ff","mo8sz94tdj3vc4yw6et","mo8szoc1mpmt60w1msd","mo8szxxdwwneztw0tt","mo8t06utarnh33cjpus","mo8tg7rthk4jckbnd","mo8tgff8w1j9p8eqdyd","mo8tgmlwpu1a6vnawqm","mo8tgwoufado0fuq344","mo8th6k9hfceyoe86dp","mo8ti3xml9a0my235t","mo8tiijvued3r67hufr","mo8tit5wr2uifn7gjbq","mo8tj7a2hjb0rhsx7p5","mo8tjpoyr09rlf1sbdf","mo8tjuz2sf2l6lj8oc9","mo8tk38k3jex1u6ldl3","mo8tka7vac0qsn37nwn","mo8tkmgkab5u9fnjmoe","mo8tl5aezjbkwr321mg","mo8tpiito4ds4j3vngb","mo8tppwkz7v9l2347v9","mo8tq08hgxvr3k4823u","mo8tq9rbbu65638s3i","mo8tqhostagcluu4vrk","mo8tqtq2yxbaejn8j5","mo8tr34ek97ow6x8v5","mo8trgg0bsdhqaid4kp","mo8trngjp8ao9r7mdwm"],"created":1776773933656},{"id":"mo8lc520eb2v3msoq5b","name":"8. PERSONALITY + PHYSICAL","cardIds":[],"created":1776773953944},{"id":"mo8lcg22ca46jy2kio4","name":"4. VERBS + CONJUGATIONS","cardIds":[],"created":1776773968202},{"id":"mo8lu6299g205n4n2zv","name":"2. NUMBERS","cardIds":[],"created":1776774795057},{"id":"mo8lu96ilj9j98qk1jd","name":"3. COLOURS","cardIds":["mo8s6sst0cdeifvwni8r","mo8s70gtsy0dx90uek","mo8s758xp04nwgdesz","mo8s7b0tl7774v715v","mo8s7i7c681lrsofl6w","mo8s7obupuuheyo3gwb","mo8s7vzjuk8y1eq8ab8","mo8s89dhr58psxqvlk","mo8s8e9xaaoiaw6wk2j","mo8s8xudss9w99kpnzb"],"created":1776774799098},{"id":"mo8lvhbbf4k2mq8gore","name":"9. SHOPPING","cardIds":["mo8sb6lu3qbnh4kphta","mo8sbc1bak62plh5q2h","mo8sbii8wnvisqk0ye","mo8sbrblribageoobjb","mo8sbvljzndyjvyft6n","mo8sc17qob6itu1py38","mo8scapnj7lfawv7las","mo8scgvbop5vr9u0kje","mo8scmny5k6fkztu9zc","mo8sfdh9n0kem97tvud","mo8sfwq3xztxkxt1vf9","mo8sgumn7w4ubu1s1l4","mo8shgni7cr1ttu5xln","mo8shx9sw3w0myv4sq","mo8skmgk4tnwmo48gpa","mo8sky1xfsakc21fj5e","mo8sl42jc0l4s9h6vy8","mo8slb9t4z6gf11awx","mo8sliwknujm9heq0fa"],"created":1776774856295},{"id":"mo8lvpcme2fepb0qz3r","name":"10. NAVIGATION + TRAVEL","cardIds":[],"created":1776774866710},{"id":"mo8lwlh0i4z4wc14iz8","name":"6. PHRASES","cardIds":[],"created":1776774908340},{"id":"mo8rao0powgh6pdsbm","name":"5. TIME","cardIds":["mo8rbsyfs4pwmxhcvar","mo8rvxnw3vcmfx9sni7","mo8rw506jek6w18kx3a","mo8rwgjxoryr7vqo6rp","mo8rwliqxk4lymncd0a","mo8rwvba5nezk8bmo6n","mo8rx2ym9c6i4uk1k94","mo8rxogfm0gni8q902","mo8rxstxr5hcydejuwg","mo8ry02lcd0wsnxl5nb","mo8ry81dlwmrcyavpjk","mo8s04bt01kxp5vvttph","mo8s0f5icwoxdzoy7dl","mo8s0sg3k1nc9dwkkdh","mo8s1nnenp6vz9n45yk","mo8s25m4t3g1milvq8i","mo8s2b06xa6y5z2eeus","mo8s2qer9l06s45eant","mo8s2z3tpoznavlw1lm","mo8s376dhbv69kr5kse","mo8s3hlyyuj7duswlbi","mo8s3ye2pjus7mbtgc","mo8s5yijomtia0408ld","mo8s683nqvqqondc2e8","mo8sd6groyazrtr8ta8","mo8sde2aexefqqnylwn","mo8sdj4zz95dom158i","mo8t34apm22oe3okoj","mo8t3c0yp8l1nrgl3h","mo8t44ozh0ckv3tg4iw"],"created":1776783962905},{"id":"mo8sm4po4hreu7obm95","name":"1. BASICS","cardIds":["mo8smhbhz8x3xxsucmr","mo8smvlaso0frq9b6k","mo8sn7p2xnbv32k7ric","mo8sno3od7the4e1eec","mo8so823vr0gadoy0i9","mo8socdgvqg0p36h0u","mo8sogk2ftn0bp78cht","mo8somxdhgalvt0gngu","mo8soyifdzztn9orgh8","mo8sp4fac4e33ggkwkn","mo8sp93zo6j0mws0jgc","mo8su90bhp14z0n6bxj","mo8sud4m0xu6ej41sz7","mo8sujy4fyttfe3ejq","mo8suppmc1la55w1bbm","mo8sv3zct9wgotxptbi","mo8svi4j84m1eupse5e","mo8svlc686tugs7gc97","mo8svu6ng9ywkpo63fk","mo8svzs63ixr7swp8qs","mo8sx4g3td6831g5nkn","mo8sx98xm1uocxz3peb","mo8sxeid0u2djxll835s","mo8sxkshtt1emkn3oj","mo8sxptmp1j3n30jxz7","mo8sxvzsumq3h1hup1","mo8sy3kbilyksyadpc","mo8t0uidkk1obynuco8","mo8t14hnw2b3rnu3ve","mo8t1badyztuktkmsu","mo8t1kf0xw49fdbpbyl","mo8t2aywptj5xjn97ah"],"created":1776786177372},{"id":"mo8swjaoc6a478ippx","name":"0. ADJECTIVES","cardIds":[],"created":1776786662832}],"quizHistory":[],"streak":0,"lastStudied":null};
+
+// ── DATA ─────────────────────────────────────────────────────────────────────
+const DB = {
+  // Stable key — never versioned again. Future updates always use this.
+  KEY: 'arabic_app_data',
+  ALL_KEYS: ['arabic_app_data','arabic_v3','arabic_v2','arabic_study_v1'],
+  load() {
+    try {
+      // Gather every dataset we can find across all known keys
+      const datasets = this.ALL_KEYS
+        .map(k => { try { const r = localStorage.getItem(k); return r ? JSON.parse(r) : null; } catch { return null; } })
+        .filter(d => d && Array.isArray(d.cards));
+
+      if (!datasets.length) return this.seed();
+
+      // Use the dataset with the most cards as the base (most complete)
+      datasets.sort((a,b) => (b.cards||[]).length - (a.cards||[]).length);
+      const data = datasets[0];
+
+      // Merge unique cards + folders from every other dataset
+      const cardIds   = new Set(data.cards.map(c => c.id));
+      const folderIds = new Set((data.folders||[]).map(f => f.id));
+      if (!data.folders) data.folders = [];
+      if (!data.quizHistory) data.quizHistory = [];
+      for (let i = 1; i < datasets.length; i++) {
+        const src = datasets[i];
+        (src.cards||[]).forEach(c => { if (!cardIds.has(c.id)) { data.cards.push(c); cardIds.add(c.id); } });
+        (src.folders||[]).forEach(f => {
+          if (!folderIds.has(f.id)) { data.folders.push({...f}); folderIds.add(f.id); }
+          else {
+            const t = data.folders.find(x => x.id === f.id);
+            (f.cardIds||[]).forEach(cid => { if (!t.cardIds.includes(cid)) t.cardIds.push(cid); });
+          }
+        });
+        const existingQIds = new Set(data.quizHistory.map(q => q.id));
+        (src.quizHistory||[]).forEach(q => { if (!existingQIds.has(q.id)) data.quizHistory.push(q); });
+      }
+
+      // Guarantee all current fields exist on every card
+      data.cards.forEach(c => {
+        if (!Array.isArray(c.altAnswers)) c.altAnswers = [];
+        if (c.reviewCount  == null) c.reviewCount  = 0;
+        if (c.correctCount == null) c.correctCount = 0;
+        if (c.lastReviewed == null) c.lastReviewed = null;
+      });
+      data.folders.forEach(f => { if (!Array.isArray(f.cardIds)) f.cardIds = []; });
+      if (!data.streak) data.streak = 0;
+
+      // Always write back to the stable key so the next load is instant
+      localStorage.setItem(this.KEY, JSON.stringify(data));
+      return data;
+    } catch(e) { console.warn('DB load error', e); return this.seed(); }
+  },
+  save(d) { localStorage.setItem(this.KEY, JSON.stringify(d)); },
+  seed() {
+    const now = Date.now();
+    const card = (id,type,ar,en,tr,alts=[]) => ({id,type,arabic:ar,english:en,transliteration:tr,altAnswers:alts,notes:'',interval:1,easeFactor:2.5,repetitions:0,status:'new',due:now,created:now,reviewCount:0,correctCount:0,lastReviewed:null});
+    const cards = [
+      card('1','vocabulary','مرحبا','Hello','Marhaba',['hi','ahlan']),
+      card('2','vocabulary','شكراً','Thank you','Shukran',['shukran jazeelan']),
+      card('3','vocabulary','نعم','Yes',"Na'am"),
+      card('4','vocabulary','لا','No','La'),
+      card('5','vocabulary','من فضلك','Please','Min fadlak'),
+      card('6','vocabulary','مع السلامة','Goodbye',"Ma'a as-salama",['bye','ma3 el salama']),
+      card('7','phrase','كيف حالك؟','How are you?','Kayfa halak?',['how are you doing','kif halak']),
+      card('8','phrase','أنا بخير','I am fine','Ana bikhayr',['I am well','ana mabsoot']),
+      card('9','phrase','ما اسمك؟','What is your name?','Ma ismuk?',['eish ismak']),
+      card('10','phrase','صباح الخير','Good morning','Sabah al-khayr',['sabah el noor reply']),
+      card('11','phrase','مساء الخير','Good evening',"Masa' al-khayr"),
+      card('12','vocabulary','بيت','House','Bayt',['home','bait']),
+      card('13','vocabulary','كتاب','Book','Kitab'),
+      card('14','vocabulary','ماء','Water',"Ma'a",['moya']),
+      card('15','vocabulary','خبز','Bread','Khubz',['eish']),
+      card('16','vocabulary','يمين','Right','Yamin'),
+      card('17','vocabulary','يسار','Left','Yasar'),
+    ];
+    const folders = [
+      {id:'f1',name:'Greetings',cardIds:['1','2','3','4','5','6','7','8','9','10','11'],created:now},
+      {id:'f2',name:'Home & Objects',cardIds:['12','13'],created:now},
+      {id:'f3',name:'Food & Drink',cardIds:['14','15'],created:now},
+      {id:'f4',name:'Navigation',cardIds:['16','17'],created:now},
+    ];
+    return { cards, folders, quizHistory:[], streak:0, lastStudied:null };
+  }
+};
+
+// ── SM-2 ─────────────────────────────────────────────────────────────────────
+const SM2 = {
+  review(card, q) {
+    const sm=[1,2,4,5][q];
+    if(sm<3){card.repetitions=0;card.interval=1;}
+    else{if(!card.repetitions)card.interval=1;else if(card.repetitions===1)card.interval=6;else card.interval=Math.round(card.interval*card.easeFactor);card.repetitions++;}
+    card.easeFactor=Math.max(1.3,card.easeFactor+0.1-(5-sm)*(0.08+(5-sm)*0.02));
+    card.due=Date.now()+card.interval*86400000;
+    card.status=!card.repetitions?'new':card.repetitions<3?'learning':card.interval<21?'review':'mastered';
+    card.reviewCount=(card.reviewCount||0)+1;
+    if(q>=2)card.correctCount=(card.correctCount||0)+1;
+    card.lastReviewed=Date.now();
+  },
+  preview(card,q){const c={...card};this.review(c,q);const d=Math.round((c.due-Date.now())/86400000);return d<1?'<1d':d===1?'1d':d<30?d+'d':Math.round(d/30)+'mo';}
+};
+
+// ── APP ───────────────────────────────────────────────────────────────────────
+const app = {
+  data: null,
+  currentFolder: null,
+  // study
+  studyFolder: null, queue:[], qi:0, filter:'due', flipped:false,
+  // quiz
+  quizMode:'mc', quizCount:10, quizFolderId:'',
+  qqs:[], qqi:0, qscore:0, qAnswered:false, qResults:[],
+  // move/copy state
+  mmcCardId:null, mmcAction:'move',
+
+  init(){
+    this.data=DB.load();
+    this.updateStreak();
+    document.querySelectorAll('.nav-btn').forEach(b=>b.addEventListener('click',()=>this.navigate(b.dataset.view)));
+    this.bindStudy();
+    this.bindQuiz();
+    this.bindFolders();
+    this.bindCardForm();
+    document.getElementById('mf-name').addEventListener('keydown',e=>{if(e.key==='Enter')this.saveFolderModal();});
+    document.querySelectorAll('.modal-overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';}));
+    this.navigate('dashboard');
+  },
+  save(){DB.save(this.data);},
+
+  navigate(v){
+    document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el=>el.classList.remove('active'));
+    document.getElementById('view-'+v).classList.add('active');
+    document.querySelector(`.nav-btn[data-view="${v}"]`).classList.add('active');
+    this['render_'+v]?.();
+  },
+
+  updateStreak(){
+    const today=new Date().toDateString(),last=this.data.lastStudied;
+    if(last){const d=(new Date(today)-new Date(last))/86400000;if(d===1)this.data.streak++;else if(d>1)this.data.streak=0;}
+    document.getElementById('streak-count').textContent=this.data.streak||0;
+  },
+
+  // ── DASHBOARD ──────────────────────────────────────────────────────────────
+  render_dashboard(){
+    const now=Date.now(),cards=this.data.cards;
+    document.getElementById('s-due').textContent=cards.filter(c=>c.due<=now).length;
+    document.getElementById('s-mastered').textContent=cards.filter(c=>c.status==='mastered').length;
+    document.getElementById('s-learning').textContent=cards.filter(c=>c.status==='learning'||c.status==='review').length;
+    document.getElementById('s-total').textContent=cards.length;
+    document.getElementById('dash-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+    const sorted=sortFolders(this.data.folders);
+    document.getElementById('dash-folders').innerHTML=sorted.map(f=>{
+      const fc=cards.filter(c=>f.cardIds.includes(c.id));
+      const pct=fc.length?Math.round(fc.filter(c=>c.status==='mastered').length/fc.length*100):0;
+      return `<div class="fp-row"><div class="fp-name">${f.name}</div><div class="fp-bar"><div class="prog-wrap"><div class="prog-fill" style="width:${pct}%"></div></div></div><div class="fp-pct">${pct}%</div><div class="badge">${fc.length}</div></div>`;
+    }).join('')||'<p style="color:var(--muted);font-size:.875rem">No folders yet.</p>';
+  },
+
+  // ── FOLDERS ────────────────────────────────────────────────────────────────
+  bindFolders(){
+    document.getElementById('folder-title-input').addEventListener('change',e=>{
+      if(this.currentFolder){this.currentFolder.name=e.target.value.trim()||this.currentFolder.name;this.save();this.syncFolderDropdowns();}
+    });
+    document.getElementById('btn-qa-add').addEventListener('click',()=>this.quickAddCard());
+    ['qa-arabic','qa-english','qa-trans'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')this.quickAddCard();}));
+  },
+  render_folders(){
+    document.getElementById('folder-list-view').style.display='block';
+    document.getElementById('folder-detail-view').style.display='none';
+    this.renderFolderGrid();
+  },
+  renderFolderGrid(){
+    const cards=this.data.cards;
+    const sorted=sortFolders(this.data.folders);
+    let html=sorted.map((f,i)=>{
+      const fc=cards.filter(c=>f.cardIds.includes(c.id));
+      const pct=fc.length?Math.round(fc.filter(c=>c.status==='mastered').length/fc.length*100):0;
+      return `<div class="folder-card ${COLORS[i%COLORS.length]}" onclick="app.openFolderDetail('${f.id}')">
+        <div class="folder-actions" onclick="event.stopPropagation()">
+          <button class="icon-btn" onclick="app.renameFolderInGrid('${f.id}')">✏️</button>
+          <button class="icon-btn danger" onclick="app.deleteFolderById('${f.id}')">🗑</button>
+        </div>
+        <div class="folder-icon">📂</div>
+        <div class="folder-name">${f.name}</div>
+        <div class="folder-count">${fc.length} cards · ${pct}% mastered</div>
+      </div>`;
+    }).join('');
+    html+=`<button class="add-folder-card" onclick="app.openFolderModal()"><span style="font-size:1.4rem">+</span><span>New Folder</span></button>`;
+    document.getElementById('folders-grid').innerHTML=html;
+  },
+  openFolderDetail(fid){
+    this.currentFolder=this.data.folders.find(f=>f.id===fid);
+    if(!this.currentFolder)return;
+    document.getElementById('folder-list-view').style.display='none';
+    document.getElementById('folder-detail-view').style.display='block';
+    document.getElementById('folder-title-input').value=this.currentFolder.name;
+    this.renderFolderCards();
+  },
+  closeFolderDetail(){
+    this.currentFolder=null;
+    document.getElementById('folder-list-view').style.display='block';
+    document.getElementById('folder-detail-view').style.display='none';
+    this.renderFolderGrid();
+  },
+  renderFolderCards(){
+    if(!this.currentFolder)return;
+    const fc=this.data.cards.filter(c=>this.currentFolder.cardIds.includes(c.id));
+    document.getElementById('folder-cards-count').textContent=`${fc.length} card${fc.length!==1?'s':''}`;
+    document.getElementById('folder-empty').style.display=fc.length?'none':'block';
+    document.getElementById('folder-cards-grid').innerHTML=fc.map(card=>{
+      const alts=(card.altAnswers||[]).filter(Boolean);
+      return `<div class="card-item">
+        <div class="ci-ar">${card.arabic}</div>
+        <div class="ci-en">${card.english}</div>
+        ${card.transliteration?`<div class="ci-tr">${card.transliteration}</div>`:''}
+        ${alts.length?`<div class="ci-alt">also: ${alts.map(a=>`<span>${a}</span>`).join('')}</div>`:''}
+        <div class="ci-footer">
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+            <span class="badge ${card.type==='vocabulary'?'vocab':'phrase'}">${card.type}</span>
+            <span class="badge ${card.status}">${card.status}</span>
+          </div>
+          <div style="display:flex;gap:.3rem;flex-wrap:wrap">
+            <button class="icon-btn" onclick="app.openCardModal('${card.id}')">✏️</button>
+            <button class="icon-btn" onclick="app.openMoveModal('${card.id}')" title="Move">⇄</button>
+            <button class="icon-btn" onclick="app.openCopyModal('${card.id}')" title="Copy">⎘</button>
+            <button class="icon-btn danger" onclick="app.removeFromFolder('${card.id}')">✕</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+  },
+  quickAddCard(){
+    const ar=document.getElementById('qa-arabic').value.trim();
+    const en=document.getElementById('qa-english').value.trim();
+    const tr=document.getElementById('qa-trans').value.trim();
+    const type=document.getElementById('qa-type').value;
+    if(!ar||!en){document.getElementById('qa-arabic').focus();return;}
+    const now=Date.now();
+    const card={id:uid(),type,arabic:ar,english:en,transliteration:tr,altAnswers:[],notes:'',interval:1,easeFactor:2.5,repetitions:0,status:'new',due:now,created:now,reviewCount:0,correctCount:0,lastReviewed:null};
+    this.data.cards.push(card);
+    if(this.currentFolder)this.currentFolder.cardIds.push(card.id);
+    this.save();
+    ['qa-arabic','qa-english','qa-trans'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('qa-arabic').focus();
+    this.renderFolderCards();
+    this.syncFolderDropdowns();
+  },
+  removeFromFolder(cid){
+    if(!this.currentFolder)return;
+    this.currentFolder.cardIds=this.currentFolder.cardIds.filter(id=>id!==cid);
+    this.save();this.renderFolderCards();
+  },
+  deleteCurrentFolder(){
+    if(!this.currentFolder)return;
+    if(!confirm(`Delete folder "${this.currentFolder.name}"? Cards won't be deleted.`))return;
+    this.data.folders=this.data.folders.filter(f=>f.id!==this.currentFolder.id);
+    this.save();this.closeFolderDetail();this.syncFolderDropdowns();
+  },
+  deleteFolderById(fid){
+    const f=this.data.folders.find(x=>x.id===fid);
+    if(!f||!confirm(`Delete folder "${f.name}"? Cards won't be deleted.`))return;
+    this.data.folders=this.data.folders.filter(x=>x.id!==fid);
+    this.save();this.renderFolderGrid();this.syncFolderDropdowns();
+  },
+  renameFolderInGrid(fid){
+    const f=this.data.folders.find(x=>x.id===fid);
+    if(!f)return;
+    const name=prompt('Rename folder:',f.name);
+    if(name&&name.trim()){f.name=name.trim();this.save();this.renderFolderGrid();this.syncFolderDropdowns();}
+  },
+
+  // Move / Copy
+  openMoveModal(cid){
+    this.mmcCardId=cid;this.mmcAction='move';
+    const card=this.data.cards.find(c=>c.id===cid);
+    document.getElementById('mmc-title').textContent='Move card to…';
+    document.getElementById('mmc-card-preview').textContent=card?`"${card.arabic}" — ${card.english}`:'';
+    this.renderMMCFolders();
+    document.getElementById('modal-move-copy').style.display='flex';
+  },
+  openCopyModal(cid){
+    this.mmcCardId=cid;this.mmcAction='copy';
+    const card=this.data.cards.find(c=>c.id===cid);
+    document.getElementById('mmc-title').textContent='Copy card to…';
+    document.getElementById('mmc-card-preview').textContent=card?`"${card.arabic}" — ${card.english}`:'';
+    this.renderMMCFolders();
+    document.getElementById('modal-move-copy').style.display='flex';
+  },
+  renderMMCFolders(){
+    const sorted=sortFolders(this.data.folders);
+    document.getElementById('mmc-folder-list').innerHTML=sorted.map(f=>`
+      <button class="mmc-folder-btn" onclick="app.doMoveOrCopy('${f.id}')">
+        <span style="font-size:1.1rem">📂</span> ${f.name}
+        <span style="margin-left:auto;font-size:.75rem;color:var(--muted)">${f.cardIds.length} cards</span>
+      </button>`).join('');
+  },
+  doMoveOrCopy(targetFid){
+    const cid=this.mmcCardId;
+    const target=this.data.folders.find(f=>f.id===targetFid);
+    if(!target)return;
+    if(!target.cardIds.includes(cid))target.cardIds.push(cid);
+    if(this.mmcAction==='move'&&this.currentFolder){
+      this.currentFolder.cardIds=this.currentFolder.cardIds.filter(id=>id!==cid);
+    }
+    this.save();
+    this.closeMCModal();
+    if(this.currentFolder)this.renderFolderCards();
+  },
+  closeMCModal(){document.getElementById('modal-move-copy').style.display='none';},
+
+  // Existing cards modal
+  openExistingModal(){
+    if(!this.currentFolder)return;
+    const notIn=this.data.cards.filter(c=>!this.currentFolder.cardIds.includes(c.id));
+    if(!notIn.length){alert('All cards are already in this folder.');return;}
+    document.getElementById('existing-list').innerHTML=notIn.map(c=>`
+      <label class="existing-item">
+        <input type="checkbox" value="${c.id}">
+        <div style="flex:1"><div class="ei-ar">${c.arabic}</div><div class="ei-en">${c.english}</div></div>
+      </label>`).join('');
+    document.getElementById('modal-existing').style.display='flex';
+  },
+  confirmAddExisting(){
+    const checked=[...document.querySelectorAll('#existing-list input:checked')].map(i=>i.value);
+    if(this.currentFolder)checked.forEach(id=>{if(!this.currentFolder.cardIds.includes(id))this.currentFolder.cardIds.push(id);});
+    this.save();this.closeExistingModal();this.renderFolderCards();
+  },
+  closeExistingModal(){document.getElementById('modal-existing').style.display='none';},
+
+  // Folder modal
+  openFolderModal(){document.getElementById('mf-name').value='';document.getElementById('modal-folder').style.display='flex';setTimeout(()=>document.getElementById('mf-name').focus(),50);},
+  closeFolderModal(){document.getElementById('modal-folder').style.display='none';},
+  saveFolderModal(){
+    const name=document.getElementById('mf-name').value.trim();
+    if(!name)return;
+    this.data.folders.push({id:uid(),name,cardIds:[],created:Date.now()});
+    this.save();this.closeFolderModal();this.renderFolderGrid();this.syncFolderDropdowns();
+  },
+
+  // Card modal
+  openCardModal(cid){
+    const card=this.data.cards.find(c=>c.id===cid);
+    document.getElementById('card-form').reset();
+    document.getElementById('alt-fields').innerHTML='<div class="alt-field-row"><input class="inp" placeholder="e.g. 3ahlan, ya3ni…"><button type="button" class="icon-btn danger" onclick="this.closest(\'.alt-field-row\').remove()">✕</button></div>';
+    document.getElementById('mc-title').textContent=card?'Edit Card':'Add Card';
+    document.getElementById('cf-id').value=cid||'';
+    if(card){
+      document.querySelector(`input[name="ctype"][value="${card.type}"]`).checked=true;
+      document.getElementById('cf-arabic').value=card.arabic;
+      document.getElementById('cf-english').value=card.english;
+      document.getElementById('cf-trans').value=card.transliteration||'';
+      document.getElementById('cf-notes').value=card.notes||'';
+      const alts=(card.altAnswers||[]).filter(Boolean);
+      const af=document.getElementById('alt-fields');
+      af.innerHTML='';
+      const toShow=alts.length?alts:[''];
+      toShow.forEach(a=>{
+        const row=document.createElement('div');row.className='alt-field-row';
+        row.innerHTML=`<input class="inp" value="${a}" placeholder="e.g. 3ahlan, ya3ni…"><button type="button" class="icon-btn danger" onclick="this.closest('.alt-field-row').remove()">✕</button>`;
+        af.appendChild(row);
+      });
+    }
+    document.getElementById('modal-card').style.display='flex';
+    setTimeout(()=>document.getElementById('cf-arabic').focus(),50);
+  },
+  addAltField(){
+    const row=document.createElement('div');row.className='alt-field-row';
+    row.innerHTML=`<input class="inp" placeholder="e.g. 3ahlan, ya3ni…"><button type="button" class="icon-btn danger" onclick="this.closest('.alt-field-row').remove()">✕</button>`;
+    document.getElementById('alt-fields').appendChild(row);
+    row.querySelector('input').focus();
+  },
+  closeCardModal(){document.getElementById('modal-card').style.display='none';},
+  bindCardForm(){
+    document.getElementById('card-form').addEventListener('submit',e=>{e.preventDefault();this.saveCard();});
+  },
+  saveCard(){
+    const id=document.getElementById('cf-id').value;
+    const altAnswers=[...document.querySelectorAll('#alt-fields .alt-field-row input')].map(i=>i.value.trim()).filter(Boolean);
+    const data={type:document.querySelector('input[name="ctype"]:checked').value,arabic:document.getElementById('cf-arabic').value.trim(),english:document.getElementById('cf-english').value.trim(),transliteration:document.getElementById('cf-trans').value.trim(),notes:document.getElementById('cf-notes').value.trim(),altAnswers};
+    if(!data.arabic||!data.english)return;
+    if(id){const c=this.data.cards.find(x=>x.id===id);if(c)Object.assign(c,data);}
+    else{const c={id:uid(),...data,interval:1,easeFactor:2.5,repetitions:0,status:'new',due:Date.now(),created:Date.now(),reviewCount:0,correctCount:0,lastReviewed:null};this.data.cards.push(c);if(this.currentFolder)this.currentFolder.cardIds.push(c.id);}
+    this.save();this.closeCardModal();
+    if(this.currentFolder)this.renderFolderCards();
+    this.syncFolderDropdowns();
+  },
+
+  // ── SYNC DROPDOWNS ─────────────────────────────────────────────────────────
+  syncFolderDropdowns(){
+    const sorted=sortFolders(this.data.folders);
+    const opts='<option value="">— Select a folder —</option><option value="all">All Topics (Mix)</option>'+sorted.map(f=>`<option value="${f.id}">${f.name}</option>`).join('');
+    const qs=document.getElementById('qs-folder');
+    if(qs){const v=qs.value;qs.innerHTML=opts;qs.value=v;}
+  },
+
+  // ── STUDY ──────────────────────────────────────────────────────────────────
+  bindStudy(){
+    document.getElementById('fc-scene').addEventListener('click',()=>this.flip());
+    document.getElementById('btn-flip').addEventListener('click',()=>this.flip());
+    document.querySelectorAll('.r-btn').forEach(b=>b.addEventListener('click',()=>this.rate(+b.dataset.q)));
+    document.getElementById('study-filter').addEventListener('change',e=>{this.filter=e.target.value;this.startStudy();});
+  },
+  render_study(){
+    this.studyFolder=null;
+    document.getElementById('study-picker').style.display='block';
+    document.getElementById('study-active').style.display='none';
+    this.renderStudyPicker();
+  },
+  renderStudyPicker(){
+    const cards=this.data.cards,sorted=sortFolders(this.data.folders);
+    const allDue=cards.filter(c=>c.due<=Date.now()).length;
+    let html=`<div class="picker-card all-topics" onclick="app.selectStudyFolder({id:'all',name:'All Topics'})">
+      <div class="pc-icon">🌐</div>
+      <div class="pc-name">All Topics</div>
+      <div class="pc-count">${cards.length} cards · ${allDue} due</div>
+    </div>`;
+    html+=sorted.map((f,i)=>{
+      const fc=cards.filter(c=>f.cardIds.includes(c.id));
+      const due=fc.filter(c=>c.due<=Date.now()).length;
+      return `<div class="picker-card ${COLORS[i%COLORS.length]}" onclick="app.selectStudyFolder({id:'${f.id}',name:'${f.name.replace(/'/g,"\\'")}',cardIds:${JSON.stringify(f.cardIds)}})">
+        <div class="pc-icon">📂</div>
+        <div class="pc-name">${f.name}</div>
+        <div class="pc-count">${fc.length} cards · ${due} due</div>
+      </div>`;
+    }).join('');
+    document.getElementById('study-picker-grid').innerHTML=html;
+  },
+  selectStudyFolder(folder){
+    this.studyFolder=folder;
+    document.getElementById('study-picker').style.display='none';
+    document.getElementById('study-active').style.display='block';
+    document.getElementById('study-folder-tag').textContent=`📂 ${folder.name}`;
+    this.filter='due';
+    document.getElementById('study-filter').value='due';
+    this.startStudy();
+  },
+  backToStudyPicker(){
+    this.studyFolder=null;
+    document.getElementById('study-picker').style.display='block';
+    document.getElementById('study-active').style.display='none';
+  },
+  setStudyFilter(f){this.filter=f;document.getElementById('study-filter').value=f;this.startStudy();},
+  startStudy(){
+    if(!this.studyFolder)return;
+    const now=Date.now();let cards=[...this.data.cards];
+    if(this.studyFolder.id!=='all'){const f=this.data.folders.find(x=>x.id===this.studyFolder.id);if(f)cards=cards.filter(c=>f.cardIds.includes(c.id));}
+    if(this.filter==='due')cards=cards.filter(c=>c.due<=now);
+    else if(this.filter==='new')cards=cards.filter(c=>c.status==='new');
+    cards.sort((a,b)=>a.due-b.due||a.easeFactor-b.easeFactor);
+    this.queue=cards;this.qi=0;this.flipped=false;
+    document.getElementById('study-empty').style.display=cards.length?'none':'block';
+    document.getElementById('fc-wrapper').style.display=cards.length?'block':'none';
+    if(cards.length)this.showCard();
+  },
+  showCard(){
+    const card=this.queue[this.qi];if(!card){this.startStudy();return;}
+    document.getElementById('flashcard').classList.remove('flipped');
+    this.flipped=false;
+    document.getElementById('rating-area').style.display='none';
+    document.getElementById('btn-flip').style.display='inline-block';
+    document.getElementById('fc-ar').textContent=card.arabic;
+    document.getElementById('fc-tr').textContent=card.transliteration||'';
+    document.getElementById('fc-en').textContent=card.english;
+    document.getElementById('fc-ar-sm').textContent=card.arabic;
+    const alts=(card.altAnswers||[]).filter(Boolean);
+    document.getElementById('fc-alts').textContent=alts.length?'also: '+alts.join(', '):'';
+    const f=this.data.folders.find(x=>x.cardIds&&x.cardIds.includes(card.id));
+    document.getElementById('fc-tag').textContent=f?f.name:'';
+    document.getElementById('fc-badge').textContent=card.type;
+    document.getElementById('ri-hard').textContent=SM2.preview(card,1);
+    document.getElementById('ri-good').textContent=SM2.preview(card,2);
+    document.getElementById('ri-easy').textContent=SM2.preview(card,3);
+    const pct=this.queue.length?Math.round(this.qi/this.queue.length*100):0;
+    document.getElementById('study-prog-bar').style.width=pct+'%';
+    document.getElementById('study-prog-text').textContent=`${this.qi} / ${this.queue.length}`;
+    document.getElementById('study-prog-pct').textContent=pct+'%';
+  },
+  flip(){
+    if(this.flipped)return;
+    this.flipped=true;
+    document.getElementById('flashcard').classList.add('flipped');
+    document.getElementById('rating-area').style.display='block';
+    document.getElementById('btn-flip').style.display='none';
+  },
+  rate(q){
+    const card=this.queue[this.qi];
+    const idx=this.data.cards.findIndex(c=>c.id===card.id);
+    if(idx!==-1)SM2.review(this.data.cards[idx],q);
+    this.data.lastStudied=new Date().toDateString();
+    this.save();this.updateStreak();
+    if(q===0)this.queue.push(card);
+    this.qi++;
+    if(this.qi>=this.queue.length)this.startStudy();else this.showCard();
+  },
+
+  // ── QUIZ ───────────────────────────────────────────────────────────────────
+  bindQuiz(){
+    // mode toggle
+    document.getElementById('qs-mode-group').addEventListener('click',e=>{
+      const btn=e.target.closest('.opt-btn');if(!btn)return;
+      document.querySelectorAll('#qs-mode-group .opt-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');this.quizMode=btn.dataset.mode;
+    });
+    // count toggle
+    document.getElementById('qs-count-group').addEventListener('click',e=>{
+      const btn=e.target.closest('.opt-btn');if(!btn)return;
+      document.querySelectorAll('#qs-count-group .opt-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');this.quizCount=parseInt(btn.dataset.count);
+    });
+    // folder select
+    document.getElementById('qs-folder').addEventListener('change',e=>{
+      this.quizFolderId=e.target.value;
+      document.getElementById('btn-start-quiz').disabled=!e.target.value;
+    });
+    document.getElementById('btn-start-quiz').addEventListener('click',()=>this.startQuiz());
+    document.getElementById('btn-quiz-again').addEventListener('click',()=>this.startQuiz());
+    // type answer
+    document.getElementById('btn-ta-submit').addEventListener('click',()=>this.submitTypeAnswer());
+    document.getElementById('ta-input').addEventListener('keydown',e=>{if(e.key==='Enter')this.submitTypeAnswer();});
+    document.getElementById('btn-ta-next').addEventListener('click',()=>this.advanceQuiz());
+    document.getElementById('btn-ta-override').addEventListener('click',()=>this.overrideCorrect());
+  },
+  render_quiz(){
+    this.showQuizSetup();
+    this.syncFolderDropdowns();
+    // reset folder selection state
+    document.getElementById('qs-folder').value='';
+    document.getElementById('btn-start-quiz').disabled=true;
+  },
+  showQuizSetup(){
+    document.getElementById('quiz-setup-screen').style.display='block';
+    document.getElementById('quiz-session').style.display='none';
+    document.getElementById('quiz-results').style.display='none';
+  },
+  startQuiz(){
+    const fid=this.quizFolderId||document.getElementById('qs-folder').value;
+    if(!fid){alert('Please select a folder or All Topics first.');return;}
+    let pool=[...this.data.cards];
+    if(fid!=='all'){const f=this.data.folders.find(x=>x.id===fid);if(f)pool=pool.filter(c=>f.cardIds.includes(c.id));}
+    if(pool.length<4){alert('Need at least 4 cards to start a quiz.');return;}
+    const count=this.quizCount||999;
+    this.qqs=pool.sort(()=>Math.random()-.5).slice(0,Math.min(count,pool.length));
+    this.qqi=0;this.qscore=0;this.qResults=[];
+    document.getElementById('quiz-setup-screen').style.display='none';
+    document.getElementById('quiz-session').style.display='block';
+    document.getElementById('quiz-results').style.display='none';
+    this.showQ();
+  },
+  showQ(){
+    const q=this.qqs[this.qqi],total=this.qqs.length;
+    document.getElementById('q-num').textContent=`Q ${this.qqi+1} / ${total}`;
+    document.getElementById('q-score').textContent=this.qscore;
+    document.getElementById('quiz-prog').style.width=`${(this.qqi/total)*100}%`;
+    // Always show arabic + transliteration as the question stimulus
+    document.getElementById('q-ar').textContent=q.arabic;
+    document.getElementById('q-ar').setAttribute('dir','rtl');
+    document.getElementById('q-tr').textContent=q.transliteration||'';
+    document.getElementById('q-prompt').textContent='What does this mean?';
+    // show correct section
+    document.getElementById('mc-section').style.display=this.quizMode==='mc'?'block':'none';
+    document.getElementById('ta-section').style.display=this.quizMode==='type'?'block':'none';
+    if(this.quizMode==='mc')this.buildMCOptions(q);
+    else this.buildTypeAnswer(q);
+    this.qAnswered=false;
+  },
+  buildMCOptions(q){
+    const wrong=this.data.cards.filter(c=>c.id!==q.id).sort(()=>Math.random()-.5).slice(0,3);
+    const opts=[q,...wrong].sort(()=>Math.random()-.5);
+    document.getElementById('quiz-opts').innerHTML='';
+    opts.forEach(opt=>{
+      const btn=document.createElement('button');
+      btn.className='q-opt';
+      btn.innerHTML=`<span class="opt-en">${opt.english}</span>${opt.transliteration?`<span class="opt-tr">${opt.transliteration}</span>`:''}`;
+      btn.dataset.id=opt.id;
+      btn.addEventListener('click',()=>this.answerMC(opt.id===q.id,btn,q));
+      document.getElementById('quiz-opts').appendChild(btn);
+    });
+  },
+  answerMC(correct,clickedBtn,q){
+    if(this.qAnswered)return;this.qAnswered=true;
+    document.querySelectorAll('.q-opt').forEach(b=>{
+      b.disabled=true;
+      if(b.dataset.id===q.id)b.classList.add(correct?'mc-correct':'mc-reveal');
+    });
+    if(!correct)clickedBtn.classList.remove('mc-reveal');if(!correct)clickedBtn.classList.add('mc-wrong');
+    if(correct)this.qscore++;
+    this.qResults.push({card:q,correct});
+    setTimeout(()=>this.advanceQuiz(),1400);
+  },
+  buildTypeAnswer(q){
+    document.getElementById('ta-input').value='';
+    document.getElementById('ta-feedback').style.display='none';
+    document.getElementById('btn-ta-submit').style.display='inline-block';
+    document.getElementById('ta-input').disabled=false;
+    document.getElementById('ta-input').focus();
+    this._currentQ=q;
+  },
+  submitTypeAnswer(){
+    if(this.qAnswered)return;
+    const input=document.getElementById('ta-input').value;
+    if(!input.trim())return;
+    const q=this._currentQ;
+    const acceptable=[q.english,q.transliteration,...(q.altAnswers||[])].filter(Boolean);
+    const correct=acceptable.some(a=>norm(a)===norm(input));
+    this.qAnswered=true;
+    document.getElementById('ta-input').disabled=true;
+    document.getElementById('btn-ta-submit').style.display='none';
+    // feedback
+    const fb=document.getElementById('ta-feedback-inner');
+    fb.className='ta-feedback '+(correct?'correct':'wrong');
+    document.getElementById('ta-result-text').textContent=correct?'✓ Correct!':'✗ Incorrect';
+    document.getElementById('ta-result-text').style.color=correct?'var(--purple)':'var(--red)';
+    if(!correct){
+      const correctStr=q.english+(q.transliteration?` / ${q.transliteration}`:'');
+      document.getElementById('ta-correct-show').innerHTML=`Correct answer: <strong>${correctStr}</strong>`;
+      document.getElementById('btn-ta-override').style.display='inline-block';
+    }else{
+      document.getElementById('ta-correct-show').textContent='';
+      document.getElementById('btn-ta-override').style.display='none';
+    }
+    document.getElementById('ta-feedback').style.display='block';
+    if(correct){this.qscore++;this.qResults.push({card:q,correct:true});}
+    else this.qResults.push({card:q,correct:false});
+  },
+  overrideCorrect(){
+    // Override last result to correct
+    if(this.qResults.length){this.qResults[this.qResults.length-1].correct=true;this.qscore++;}
+    document.getElementById('ta-result-text').textContent='✓ Marked as Correct';
+    document.getElementById('ta-result-text').style.color='var(--purple)';
+    document.getElementById('ta-feedback-inner').className='ta-feedback correct';
+    document.getElementById('btn-ta-override').style.display='none';
+  },
+  advanceQuiz(){
+    this.qqi++;
+    if(this.qqi>=this.qqs.length)this.showResults();else this.showQ();
+  },
+  showResults(){
+    document.getElementById('quiz-session').style.display='none';
+    document.getElementById('quiz-results').style.display='block';
+    const total=this.qqs.length,pct=Math.round(this.qscore/total*100);
+    // save history
+    const fid=this.quizFolderId;
+    const f=this.data.folders.find(x=>x.id===fid);
+    this.data.quizHistory.push({id:uid(),date:Date.now(),folderId:fid||null,folderName:f?f.name:'All Topics',score:this.qscore,total,mode:this.quizMode});
+    this.save();
+    const circle=document.getElementById('res-circle');
+    circle.textContent=pct+'%';
+    const col=pct>=80?'var(--purple)':pct>=50?'var(--orange)':'var(--red)';
+    circle.style.borderColor=col;circle.style.color=col;
+    document.getElementById('res-title').textContent=pct===100?'Perfect!':pct>=80?'Great job!':pct>=50?'Keep going!':'Keep practising!';
+    document.getElementById('res-sub').textContent=`${this.qscore} / ${total} correct`;
+    document.getElementById('res-breakdown').innerHTML=this.qResults.map(r=>`
+      <div class="res-row">
+        <span dir="rtl" style="font-family:'Noto Naskh Arabic',serif">${r.card.arabic}</span>
+        <span style="color:var(--muted);font-size:.8rem">${r.card.english}${r.card.transliteration?' / '+r.card.transliteration:''}</span>
+        <span style="color:${r.correct?'var(--purple)':'var(--red)'};font-weight:600">${r.correct?'✓':'✗'}</span>
+      </div>`).join('');
+  },
+
+  // ── RESULTS ────────────────────────────────────────────────────────────────
+  render_results(){
+    const cards=this.data.cards,qh=this.data.quizHistory;
+    const totalQ=qh.length;
+    const avgAcc=totalQ?Math.round(qh.reduce((s,q)=>s+q.score/q.total,0)/totalQ*100):null;
+    document.getElementById('rs-quizzes').textContent=totalQ;
+    document.getElementById('rs-accuracy').textContent=avgAcc!==null?avgAcc+'%':'—';
+    document.getElementById('rs-reviewed').textContent=cards.filter(c=>c.reviewCount>0).length;
+    document.getElementById('rs-mastered').textContent=cards.filter(c=>c.status==='mastered').length;
+    const allFolders=[{id:null,name:'All Cards',cardIds:cards.map(c=>c.id)},...sortFolders(this.data.folders)];
+    const accentColors=['var(--muted)','var(--pink)','var(--orange)','var(--red)','var(--purple)'];
+    document.getElementById('folder-results').innerHTML=allFolders.map((f,fi)=>{
+      const fc=cards.filter(c=>f.cardIds.includes(c.id));
+      if(!fc.length&&f.id)return'';
+      const newC=fc.filter(c=>c.status==='new').length;
+      const learning=fc.filter(c=>c.status==='learning').length;
+      const review=fc.filter(c=>c.status==='review').length;
+      const masteredC=fc.filter(c=>c.status==='mastered').length;
+      const pct=fc.length?Math.round(masteredC/fc.length*100):0;
+      const fqh=f.id?qh.filter(q=>q.folderId===f.id):qh;
+      const qCount=fqh.length;
+      const qAcc=qCount?Math.round(fqh.reduce((s,q)=>s+q.score/q.total,0)/qCount*100):null;
+      const fcRev=fc.filter(c=>c.reviewCount>0);
+      const fcAcc=fcRev.length?Math.round(fcRev.reduce((s,c)=>s+(c.correctCount||0)/c.reviewCount,0)/fcRev.length*100):null;
+      const weak=fc.filter(c=>c.reviewCount>0).sort((a,b)=>((a.correctCount||0)/a.reviewCount)-((b.correctCount||0)/b.reviewCount)).slice(0,3);
+      return `<div class="fr-card" style="border-top:3px solid ${accentColors[fi%accentColors.length]}">
+        <div class="fr-hdr"><div class="fr-name">${f.name}</div><div class="badge">${fc.length} cards</div></div>
+        <div class="fr-stats">
+          <div class="fr-stat"><div class="fr-stat-val" style="color:var(--muted)">${newC}</div><div class="fr-stat-lbl">New</div></div>
+          <div class="fr-stat"><div class="fr-stat-val" style="color:var(--orange)">${learning}</div><div class="fr-stat-lbl">Learning</div></div>
+          <div class="fr-stat"><div class="fr-stat-val" style="color:var(--pink)">${review}</div><div class="fr-stat-lbl">Review</div></div>
+          <div class="fr-stat"><div class="fr-stat-val" style="color:var(--purple)">${masteredC}</div><div class="fr-stat-lbl">Mastered</div></div>
+        </div>
+        <div class="prog-text-sm">${pct}% mastered</div>
+        <div class="prog-wrap" style="margin-bottom:.75rem"><div class="prog-fill" style="width:${pct}%"></div></div>
+        <div style="display:flex;gap:1.5rem;font-size:.82rem;color:var(--muted)">
+          <span>📝 ${qCount} quiz${qCount!==1?'zes':''} · ${qAcc!==null?qAcc+'% acc':'no data'}</span>
+          <span>🃏 ${fcRev.length} reviewed · ${fcAcc!==null?fcAcc+'% correct':'no data'}</span>
+        </div>
+        ${weak.length?`<div class="weak-section"><div class="weak-title">Needs work</div>${weak.map(c=>`<div class="weak-item"><span class="weak-ar">${c.arabic}</span><span style="color:var(--muted)">${c.english}</span><span class="badge">${Math.round((c.correctCount||0)/c.reviewCount*100)}%</span></div>`).join('')}</div>`:''}
+      </div>`;
+    }).join('');
+    document.getElementById('recovery-panel').innerHTML='';
+  },
+
+  // ── DATA RECOVERY ──────────────────────────────────────────────────────────
+  renderRecovery(){
+    const panel = document.getElementById('recovery-panel');
+
+    // Scan EVERY key in localStorage — not just known names
+    const found = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      try {
+        const raw = localStorage.getItem(k);
+        if (!raw || raw[0] !== '{') continue;
+        const d = JSON.parse(raw);
+        if (Array.isArray(d.cards) && d.cards.length > 0) {
+          found.push({ key: k, cards: d.cards.length, folders: (d.folders||[]).length });
+        }
+      } catch { continue; }
+    }
+    found.sort((a,b) => b.cards - a.cards);
+
+    const currentKey = DB.KEY;
+    const rows = found.length ? found.map(f => `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:.65rem 1rem;flex-wrap:wrap;gap:.5rem">
+        <div>
+          <span style="font-weight:600;font-size:.82rem;font-family:monospace;color:var(--pink)">${f.key}</span>
+          <span style="font-size:.78rem;color:var(--muted);margin-left:.75rem">${f.cards} cards · ${f.folders} folders</span>
+          ${f.key===currentKey?'<span style="font-size:.7rem;color:var(--purple);margin-left:.5rem;border:1px solid var(--purple);border-radius:100px;padding:.1rem .4rem">current</span>':''}
+        </div>
+        ${f.key!==currentKey?`<button class="btn btn-pink btn-sm" onclick="app.recoverFrom('${f.key}')">Merge into current</button>`:'<span style="font-size:.78rem;color:var(--muted)">active</span>'}
+      </div>`).join('') : '<p style="font-size:.85rem;color:var(--muted);margin-bottom:1rem">No card data found in this browser\'s localStorage. Use the manual paste below.</p>';
+
+    panel.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.25rem">${rows}</div>
+      <details style="margin-top:.5rem">
+        <summary style="cursor:pointer;font-size:.85rem;color:var(--muted);padding:.5rem 0;user-select:none">
+          ▸ Manual paste — copy data from browser console
+        </summary>
+        <div style="margin-top:.875rem">
+          <p style="font-size:.82rem;color:var(--muted);margin-bottom:.75rem;line-height:1.6">
+            Open <strong style="color:var(--text)">index.html</strong> in your browser, press <strong style="color:var(--text)">F12</strong> → Console tab, paste this and press Enter — then copy the result and paste it below:<br>
+            <code style="display:block;background:var(--bg);border:1px solid var(--border);border-radius:var(--rs);padding:.6rem .85rem;margin-top:.5rem;font-size:.8rem;color:var(--orange);word-break:break-all">JSON.stringify(Object.fromEntries(Object.keys(localStorage).map(k=>[k,localStorage.getItem(k)])))</code>
+          </p>
+          <textarea id="paste-import" class="inp" rows="5" placeholder='Paste the JSON output here…' style="font-size:.75rem;font-family:monospace;resize:vertical"></textarea>
+          <button class="btn btn-pink btn-sm" style="margin-top:.5rem" onclick="app.importFromPaste()">Import pasted data</button>
+        </div>
+      </details>`;
+  },
+
+  recoverFrom(key){
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) { alert('No data found for that key.'); return; }
+      const src = JSON.parse(raw);
+      this._mergeData(src);
+    } catch(e) { alert('Failed to read that data: ' + e.message); }
+  },
+
+  importFromPaste(){
+    try {
+      const text = document.getElementById('paste-import').value.trim();
+      if (!text) { alert('Nothing pasted yet.'); return; }
+      const outer = JSON.parse(text);
+      // Could be a direct data object OR a map of {key: jsonString}
+      const candidates = [];
+      if (Array.isArray(outer.cards)) {
+        candidates.push(outer);
+      } else {
+        Object.values(outer).forEach(v => {
+          try { const d = JSON.parse(v); if (Array.isArray(d.cards)) candidates.push(d); } catch {}
+        });
+      }
+      if (!candidates.length) { alert('No card data found in the pasted content.'); return; }
+      candidates.sort((a,b) => b.cards.length - a.cards.length);
+      let totalAdded = 0;
+      candidates.forEach(src => { totalAdded += this._mergeData(src, true); });
+      this.save();
+      alert(`Done! Imported ${totalAdded} new cards.`);
+      this.render_results();
+      this.renderRecovery();
+    } catch(e) { alert('Could not parse that data.\n\n' + e.message); }
+  },
+
+  _mergeData(src, dryRun=false){
+    const cardIds   = new Set(this.data.cards.map(c => c.id));
+    const folderIds = new Set(this.data.folders.map(f => f.id));
+    let addedCards = 0, addedFolders = 0;
+    (src.cards||[]).forEach(c => {
+      if (!cardIds.has(c.id)) {
+        if (!Array.isArray(c.altAnswers)) c.altAnswers = [];
+        if (c.reviewCount  == null) c.reviewCount  = 0;
+        if (c.correctCount == null) c.correctCount = 0;
+        if (c.lastReviewed == null) c.lastReviewed = null;
+        this.data.cards.push(c); cardIds.add(c.id); addedCards++;
+      }
+    });
+    (src.folders||[]).forEach(f => {
+      if (!folderIds.has(f.id)) { this.data.folders.push({...f}); folderIds.add(f.id); addedFolders++; }
+      else {
+        const t = this.data.folders.find(x => x.id === f.id);
+        (f.cardIds||[]).forEach(cid => { if (!t.cardIds.includes(cid)) t.cardIds.push(cid); });
+      }
+    });
+    if (!dryRun) {
+      this.save();
+      alert(`Done! Merged ${addedCards} new cards and ${addedFolders} new folders.`);
+      this.render_results();
+      this.renderRecovery();
+    }
+    return addedCards;
+  }
+};
+
+document.addEventListener('DOMContentLoaded',()=>app.init());
+</script>
+</body>
+</html>
